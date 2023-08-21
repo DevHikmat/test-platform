@@ -1,0 +1,36 @@
+.category-box {
+  a {
+    text-decoration: none;
+    color: #444;
+  }
+  &-item {
+    position: relative;
+    .ant-card {
+      &-cover {
+        i {
+          font-size: 100px;
+          text-align: center;
+          color: rgb(80, 141, 202);
+        }
+      }
+    }
+    .delete-category-btn {
+      position: absolute;
+      top: 10px;
+      right: 20px;
+    }
+  }
+}
+
+@media only screen and (max-width: 576px) {
+  .category-box {
+    &-actions {
+      justify-content: center;
+      .hide-menu {
+        display: flex;
+        justify-content: center;
+        margin-left: 0 !important;
+      }
+    }
+  }
+}

@@ -1,0 +1,59 @@
+.profile {
+  .avatar-box {
+    &-img {
+      position: relative;
+      width: 180px;
+      .ant-image {
+        &-img {
+          height: 180px;
+          border-radius: 50%;
+        }
+        &-mask {
+          border-radius: 50%;
+        }
+      }
+      label {
+        cursor: pointer;
+        width: 30px;
+        height: 30px;
+        background-color: #6356e5;
+        color: white;
+        border-radius: 50%;
+        text-align: center;
+        line-height: 30px;
+        font-size: 12px;
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        transition: all 0.3s linear;
+        opacity: 0.5;
+        &:hover {
+          opacity: 0.8;
+        }
+      }
+    }
+  }
+}
+
+@media only screen and (max-width: 576px) {
+  .profile {
+    .avatar-box {
+      &-img {
+        width: 150px;
+        .ant-image {
+          &-img {
+            height: 150px;
+          }
+        }
+      }
+      &-info {
+        h5 {
+          font-size: 16px;
+        }
+        h6 {
+          font-size: 16px;
+        }
+      }
+    }
+  }
+}
