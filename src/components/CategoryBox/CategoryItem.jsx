@@ -38,8 +38,8 @@ const CategoryItem = ({ cat }) => {
             }}
             cover={
               <img
-                alt="category image"
-                style={{ height: "180px", objectFit: "cover" }}
+                alt="category img"
+                style={{ height: "220px", objectFit: "cover" }}
                 src={cat.image?.url}
               ></img>
             }

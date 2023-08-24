@@ -6,6 +6,7 @@ import { UserService } from "../../services/UserService";
 import { getAllUsersStart, getAllUsersSuccess } from "../../redux/userSlice";
 import TeacherItem from "./TeacherItem";
 import { toast } from "react-toastify";
+import "./TeacherBox.scss";
 
 const TeacherBox = () => {
   const dispatch = useDispatch();

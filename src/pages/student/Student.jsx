@@ -9,7 +9,7 @@ import QuizBox from "../../components/QuizBox/QuizBox";
 import HistoryBox from "../../components/HistoryBox/HistoryBox";
 import { getQuizStart, getQuizSuccess } from "../../redux/quizSlice";
 import { QuizService } from "../../services/QuizService";
-import QuizUserView from "../../components/QuizBox/QuizUserView";
+import QuizStudentView from "../../components/QuizBox/QuizStudentView";
 import { authLogout } from "../../redux/authSlice";
 import Profile from "../../components/Profile/Profile";
 const { Header, Sider, Content } = Layout;
@@ -92,7 +92,7 @@ const Student = () => {
       <Layout>
         <Sider
           breakpoint="md"
-          collapsedWidth="0"
+          // collapsedWidth="0"
           trigger={null}
           collapsible
           collapsed={collapsed}
@@ -110,7 +110,7 @@ const Student = () => {
             defaultSelectedKeys={[
               String(
                 items.findIndex(
-                  (item) => "/cabinet" + item.url === location.pathname
+                  (item) => "/student" + item.url === location.pathname
                 ) + 1
               ),
             ]}
@@ -178,7 +178,7 @@ const Student = () => {
             <Routes>
               <Route path="/" element={<QuizBox />} />
               <Route path="/profile" element={<Profile />} />
-              <Route path="/quiz/:id" element={<QuizUserView />} />
+              <Route path="/quiz/:id" element={<QuizStudentView />} />
               <Route path="/history" element={<HistoryBox />} />
             </Routes>
           </Content>

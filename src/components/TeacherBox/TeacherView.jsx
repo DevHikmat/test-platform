@@ -76,6 +76,11 @@ const TeacherView = () => {
               <div className="teacher-card shadow rounded">
                 <img
                   className="card-img-top"
+                  style={{
+                    height: "220px",
+                    objectFit: "cover",
+                    borderRadius: "10px 10px 0 0",
+                  }}
                   src={
                     teacher.profilePicture
                       ? teacher.profilePicture.url

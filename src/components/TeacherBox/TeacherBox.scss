@@ -1,0 +1,11 @@
+.teacher-box {
+  .ant-card {
+    img {
+      height: 220px;
+      object-fit: cover;
+    }
+    &-meta-title {
+      margin-bottom: 0 !important;
+    }
+  }
+}

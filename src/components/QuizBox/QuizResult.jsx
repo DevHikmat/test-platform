@@ -4,25 +4,25 @@ import { useSelector } from "react-redux";
 const QuizResult = () => {
   const { totalScore, currentQuiz } = useSelector((state) => state.quiz);
 
-  return (
+  return totalScore && currentQuiz ? (
     <div className="quiz-result">
       <div className="row row-cols-1 row-cols-sm-1 row-cols-md-3 row-cols-lg-3">
         <div className="col">
-          <h5 className="text-primary mb-4">Statistika</h5>
+          <h5 className="text-secondary mb-4">Statistika</h5>
           <ul className="list-unstyled">
             <li className="text-success">
               <span className="fw-bold me-3">To'g'ri javoblar soni:</span>
-              <span>{totalScore?.correctCount}</span>
+              <span>{totalScore.correctCount}</span>
             </li>
             <li className="text-danger">
               <span className="fw-bold me-3">Xato javoblar soni:</span>
-              <span>{currentQuiz?.countQuiz - totalScore?.correctCount}</span>
+              <span>{currentQuiz.countQuiz - totalScore.correctCount}</span>
             </li>
             <li className="">
               <span className="fw-bold me-3">Umumiy to'plagan ball: </span>
               <span>
                 {Math.round(
-                  (totalScore?.correctCount / currentQuiz?.countQuiz) * 100
+                  (totalScore.correctCount / currentQuiz.countQuiz) * 100
                 )}{" "}
                 %
               </span>
@@ -30,38 +30,28 @@ const QuizResult = () => {
           </ul>
         </div>
         <div className="col">
-          <h6>Xato javob bergan savol raqamlari:</h6>
           <div>
-            {totalScore?.wrongAttemps.length === 0 ? (
-              <div className="wrong-attemps">Xato javob yo'q!</div>
+            {totalScore.wrongAttemps.length === 0 ? (
+              <div className="wrong-attemps mb-3">Xato javob yo'q!</div>
             ) : (
               <div className="">
-                <div className="d-flex flex-wrap wrong-attemps">
-                  {totalScore?.wrongAttemps.map((attemp, index) => {
-                    return (
-                      <span className="me-3" key={index}>
-                        {attemp.queNum + 1}
-                      </span>
-                    );
-                  })}
-                </div>
                 <a
                   href="#collapseExample"
                   data-bs-toggle="collapse"
-                  className="btn btn-sm btn-outline-primary d-block my-3"
+                  className="btn btn-sm btn-outline-primary d-block mb-3"
                 >
                   <span className="d-block">Xatolarni ko'rib chiqish</span>
                   <span className="text-center fa-solid fa-angle-down d-block"></span>
                 </a>
                 <div className="collapse" id="collapseExample">
                   <div className="card card-body">
-                    {totalScore?.wrongAttemps.map((item, index) => {
+                    {totalScore.wrongAttemps.map((item, index) => {
                       return (
-                        <div key={index}>
+                        <div key={index} className="show-box">
                           <h6 className="mb-2">
                             {item.queNum + 1}. {item.quizQuestion}
                           </h6>
-                          <ul className="list-unstyled mb-3 p-0">
+                          <ul className="mb-3 p-0">
                             <li className="bg-success text-white">
                               {item.correctAnswer}
                             </li>
@@ -105,7 +95,7 @@ const QuizResult = () => {
 
         <div className="col">
           {Math.round(
-            (totalScore?.correctCount / currentQuiz?.countQuiz) * 100
+            (totalScore.correctCount / currentQuiz.countQuiz) * 100
           ) >= 60 ? (
             <div className="status">
               <h4 className="text-success">Passed</h4>
@@ -118,6 +108,8 @@ const QuizResult = () => {
         </div>
       </div>
     </div>
+  ) : (
+    <div className="quiz-result">Hisoblanmoqda...</div>
   );
 };
 

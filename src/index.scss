@@ -16,6 +16,9 @@ a {
     color: #444;
   }
 }
+.card-body {
+  padding: 15px 25px !important;
+}
 // Main
 .ant-layout {
   aside {
@@ -64,16 +67,22 @@ a {
         gap: 10px;
         .user-title-avatar {
           .ant-image {
-            width: 30px;
             display: flex;
             align-items: center;
             justify-content: center;
             &-img {
-              height: 30px;
+              height: 50px;
+              width: 50px;
+
               border-radius: 50%;
+              box-shadow: 0 0 10px rgba($color: #000000, $alpha: 0.3);
+              object-fit: cover;
+              outline: 2px solid rgba($color: #6356e5, $alpha: 0.4);
+              outline-offset: 1px;
             }
             &-mask {
-              height: 30px;
+              height: 50px;
+              width: 50px;
               border-radius: 50%;
             }
           }
@@ -91,14 +100,17 @@ a {
 }
 // Mobile
 @media only screen and (max-width: 576px) {
-  .admin {
-    .ant-layout {
-      header {
-        .user-title {
-          &-avatar {
+  .ant-layout {
+    header {
+      button {
+        visibility: hidden;
+      }
+      .user-title {
+        .profile-link {
+          .user-title-avatar {
             .ant-image {
-              width: 30px;
               &-img {
+                width: 30px;
                 height: 30px;
               }
               &-mask {
@@ -106,11 +118,14 @@ a {
               }
             }
           }
-          h4 {
-            display: none;
-          }
+        }
+        h4 {
+          display: none;
         }
       }
+    }
+    &-content {
+      padding: 12px !important;
     }
   }
 }

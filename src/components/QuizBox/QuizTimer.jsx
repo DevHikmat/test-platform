@@ -23,7 +23,6 @@ const QuizTimer = ({ studentAnswers }) => {
   const [remainingTime, setRemainingTime] = useState(targetTime);
 
   useEffect(() => {
-    console.log(targetTime.minutes * 60000);
     const timer = setTimeout(() => {
       handleScore();
     }, targetTime.minutes * 60000);
@@ -57,20 +56,24 @@ const QuizTimer = ({ studentAnswers }) => {
   };
 
   const handleScore = async () => {
-    console.log("tugadi");
     let correctCount = 0;
     let wrongAttemps = [];
     for (let i = 0; i < questions.length; i++) {
+      let currentQueId = questions[i]._id;
+      let currentAnSt = studentAnswers.find(
+        (ans) => ans.queId === currentQueId
+      );
       if (
-        studentAnswers[i] &&
-        studentAnswers[i].answer === questions[i].correctAnswer
+        currentAnSt &&
+        currentAnSt.answer &&
+        currentAnSt.answer === questions[i].correctAnswer
       ) {
         correctCount++;
       } else {
         wrongAttemps.push({
           ...questions[i],
           queNum: i,
-          theAns: studentAnswers[i].answer,
+          theAns: currentAnSt?.answer ? currentAnSt.answer : "",
         });
       }
     }
