@@ -1,7 +1,6 @@
 import React, { useRef } from "react";
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { toast } from "react-toastify";
 import { message } from "antd";
 import { AuthService } from "../../services/AuthService";
 import {
@@ -33,7 +32,7 @@ const Login = () => {
       message.success(`Salom ${data.user.firstname}!`);
     } catch (error) {
       dispatch(authUserFailure());
-      toast.error("Bu foydalanuvchi topilmadi!");
+      message.error("Bu foydalanuvchi topilmadi!");
     }
   };
   return (

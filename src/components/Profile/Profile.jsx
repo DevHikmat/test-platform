@@ -35,10 +35,17 @@ const Profile = () => {
   };
 
   const handleUpdateUser = async () => {
-    const userInfo = form.getFieldsValue();
     dispatch(authUpdateStart());
+    const userInfo = form.getFieldsValue();
+    let updatedInfo;
+    if (userInfo.password) {
+      updatedInfo = userInfo;
+    } else {
+      const { firstname, lastname, email } = userInfo;
+      updatedInfo = { firstname, lastname, email };
+    }
     try {
-      const data = await UserService.updateUser(currentUser._id, userInfo);
+      const data = await UserService.updateUser(currentUser._id, updatedInfo);
       dispatch(authUpdateSuccess(data));
       setIsModalOpen(false);
     } catch (error) {
@@ -72,11 +79,24 @@ const Profile = () => {
           )}
         </div>
         <div className="avatar-box-info">
-          <h5>
-            {currentUser.firstname} {currentUser.lastname}
-          </h5>
-          <span className="text-muted">{currentUser.email}</span>
-          {currentUser.role !== "admin" && (
+          <div className="d-flex align-items-start direction-sm-column flex-wrap gap-3">
+            <div>
+              <h5>
+                {currentUser.firstname} {currentUser.lastname}
+              </h5>
+              <span className="text-muted">{currentUser.email}</span>
+            </div>
+            <div>
+              {currentUser.role === "teacher" ? (
+                <h6 className="text-primary fs-2">
+                  <i className="fa-solid fa-user-graduate"></i>
+                </h6>
+              ) : (
+                ""
+              )}
+            </div>
+          </div>
+          {currentUser.role === "student" && (
             <h6>
               Guruh:{" "}
               {groups?.find((item) => item._id === currentUser.group)?.name}
@@ -110,14 +130,47 @@ const Profile = () => {
                 ?._id,
             }}
           >
-            <Form.Item name="firstname" label="Ism">
+            <Form.Item
+              name="firstname"
+              label="Ism"
+              rules={[
+                {
+                  required: true,
+                  message: "maydonni to'ldiring",
+                },
+              ]}
+            >
               <Input placeholder="Ism" />
             </Form.Item>
-            <Form.Item name="lastname" label="Familya">
+            <Form.Item
+              name="lastname"
+              label="Familya"
+              rules={[
+                {
+                  required: true,
+                  message: "maydonni to'ldiring",
+                },
+              ]}
+            >
               <Input placeholder="Familya" />
             </Form.Item>
-            <Form.Item name="email" label="E-mail">
+            <Form.Item
+              name="email"
+              label="E-mail"
+              rules={[
+                {
+                  required: true,
+                  message: "maydonni to'ldiring",
+                },
+              ]}
+            >
               <Input placeholder="E-mail" />
+            </Form.Item>
+            <Form.Item
+              name="password"
+              label="Yangi parol(Yangilash kerak bo'lmasa shart emas)"
+            >
+              <Input placeholder="Yangi parol kiriting" />
             </Form.Item>
             <Form.Item>
               <Button

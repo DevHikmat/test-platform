@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Divider, Table } from "antd";
+import { Divider, Skeleton, Table } from "antd";
 import { useDispatch, useSelector } from "react-redux";
 import { getOneUserFailure, getOneUserStart } from "../../redux/userSlice";
 import { UserService } from "../../services/UserService";
@@ -61,22 +61,28 @@ const HistoryBox = () => {
 
   useEffect(() => {
     getOneUser();
-  }, []);
+  }, [id]);
 
   return (
     <div className="history-box pt-3">
-      {history && history.length > 0 ? (
-        <div>
-          <Divider>Imtihonlar tarixi</Divider>
-          <Table
-            scroll={{ x: 900 }}
-            columns={columns}
-            dataSource={history}
-            pagination={false}
-          />
-        </div>
+      <Divider>Imtihonlar tarixi</Divider>
+      {history ? (
+        history?.length > 0 ? (
+          <div>
+            <Table
+              scroll={{ x: 900 }}
+              columns={columns}
+              dataSource={history}
+              pagination={false}
+            />
+          </div>
+        ) : (
+          <div>
+            <h6 className="mt-3">Tarix mavjud emas!</h6>
+          </div>
+        )
       ) : (
-        <h5>Tarix mavjud emas!</h5>
+        <Skeleton className="mt-5" active />
       )}
     </div>
   );

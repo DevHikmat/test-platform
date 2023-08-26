@@ -1,16 +1,18 @@
-import { PlusCircleFilled, PlusOutlined } from "@ant-design/icons";
-import { Table, Button, Divider, Form, Input, Skeleton } from "antd";
+import { PlusOutlined } from "@ant-design/icons";
+import {
+  Table,
+  Button,
+  Divider,
+  Form,
+  Input,
+  Skeleton,
+  Drawer,
+  message,
+} from "antd";
 import { useDispatch, useSelector } from "react-redux";
-import { useParams } from "react-router-dom";
-import { toast } from "react-toastify";
+import { useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { DeleteOutlined } from "@ant-design/icons";
-import {
-  addQuizFailure,
-  addQuizStart,
-  addQuizSuccess,
-} from "../../redux/quizSlice";
-import { QuizService } from "../../services/QuizService";
 import { QuestionService } from "../../services/QuestionService";
 import {
   addQuestionStart,
@@ -23,11 +25,20 @@ import {
 const { TextArea } = Input;
 
 const CategoryView = () => {
-  const [questionList, setQuestionList] = useState([]);
+  const [questionList, setQuestionList] = useState(null);
   const { id } = useParams();
   const { isChange, isLoading } = useSelector((state) => state.question);
   const [form] = Form.useForm();
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const [open, setOpen] = useState(false);
+  const showDrawer = () => {
+    setOpen(true);
+  };
+  const onClose = () => {
+    setOpen(false);
+  };
 
   const handleAllQuestion = async () => {
     dispatch(getAllQuestionStart());
@@ -47,11 +58,13 @@ const CategoryView = () => {
   const handleAddQuestion = async (values) => {
     const { quizQuestion, correctAnswer, choice1, choice2, choice3 } = values;
     if (!quizQuestion || !correctAnswer || !choice1 || !choice2 || !choice3)
-      return toast.warn("Iltimos barcha maydonlarni to'ldiring!");
+      return message.warning("Iltimos barcha maydonlarni to'ldiring!");
     if (quizQuestion.length < 5)
-      return toast.warn("Savol uzunligi 5 dan kam bo'lmasligi kerak!");
+      return message.warning("Savol uzunligi 5 dan kam bo'lmasligi kerak!");
     if (correctAnswer.length < 3)
-      return toast.warn("To'g'ri javob uzunligi 3 dan kam bo'lmasligi kerak!");
+      return message.warning(
+        "To'g'ri javob uzunligi 3 dan kam bo'lmasligi kerak!"
+      );
     dispatch(addQuestionStart());
     try {
       let formData = new FormData();
@@ -63,7 +76,7 @@ const CategoryView = () => {
       formData.append("category", id);
       const data = await QuestionService.addQuestion(formData);
       dispatch(addQuestionSuccess());
-      toast.success(data.message);
+      message.success(data.message);
       form.setFieldsValue({
         quizQuestion: "",
         correctAnswer: "",
@@ -73,7 +86,7 @@ const CategoryView = () => {
       });
     } catch (error) {
       console.log(error);
-      toast.error(error.response.data.message);
+      message.error(error.response.data.message);
     }
   };
 
@@ -85,24 +98,6 @@ const CategoryView = () => {
       dispatch(deleteQuestionSuccess());
     } catch (error) {
       console.log(error.response.data.message);
-    }
-  };
-
-  const handleFinish = async (quiz) => {
-    dispatch(addQuizStart());
-    try {
-      let addingQuiz = { ...quiz, categoryId: id };
-      const data = await QuizService.addQuiz(addingQuiz);
-      dispatch(addQuizSuccess());
-      toast.success("Imtihon qo'shildi");
-      form.setFieldsValue({
-        title: "",
-        quizCount: "",
-        quizTime: "",
-      });
-    } catch (error) {
-      dispatch(addQuizFailure());
-      toast.warn("Imtihon qo'shish uchun savollar yetarli emas!");
     }
   };
 
@@ -149,112 +144,75 @@ const CategoryView = () => {
   ];
   return (
     <div className="category-view">
-      <div className="row row-cols-sm-1 row-cols-md-2 row-cols-lg-2">
-        <div className="col">
-          <Divider>Savol qo'shish</Divider>
-          <Form
-            form={form}
-            labelCol={{ span: 6 }}
-            labelAlign="left"
-            onFinish={handleAddQuestion}
-          >
-            <Form.Item label="Savolni kiriting" name="quizQuestion">
-              <TextArea rows={3} />
-            </Form.Item>
-            <Form.Item
-              label="To'g'ri javob"
-              name="correctAnswer"
-              className="mb-3 text-primary"
+      <div className="row row-cols-sm-1 row-cols-md-1 row-cols-lg-1">
+        <Button
+          icon={<PlusOutlined />}
+          type="primary"
+          className="que-add-btn"
+          ghost={true}
+          onClick={showDrawer}
+        ></Button>
+        <Drawer
+          width={600}
+          title="Savol qo'shish"
+          placement="right"
+          onClose={onClose}
+          open={open}
+        >
+          <div className="col">
+            <Form
+              form={form}
+              labelCol={{ span: 5 }}
+              labelAlign="left"
+              onFinish={handleAddQuestion}
             >
-              <Input />
-            </Form.Item>
-            <Form.Item label="Variant 1" name="choice1" className="mb-1">
-              <Input />
-            </Form.Item>
-            <Form.Item label="Variant 2" name="choice2" className="mb-1">
-              <Input />
-            </Form.Item>
-            <Form.Item label="Variant 3" name="choice3" className="mb-1">
-              <Input />
-            </Form.Item>
-            <Form.Item>
-              <Button
-                className="my-3 d-flex align-items-center"
-                htmlType="submit"
-                icon={<PlusOutlined />}
+              <Form.Item label="Savol:" name="quizQuestion">
+                <TextArea rows={3} />
+              </Form.Item>
+              <Form.Item
+                label="Javob"
+                name="correctAnswer"
+                className="mb-3 text-primary"
               >
-                Savolni saqlash
-              </Button>
-            </Form.Item>
-          </Form>
-        </div>
-        <div className="col">
-          <Divider>Imtihon qo'shish</Divider>
-          <Form
-            labelCol={{ span: 6 }}
-            labelAlign="left"
-            onFinish={handleFinish}
-          >
-            <Form.Item
-              name="title"
-              label="Imtihon nomi"
-              rules={[
-                {
-                  required: true,
-                  message: "Iltimos maydonni to'ldiring",
-                },
-              ]}
-            >
-              <Input style={{ width: "300px" }} />
-            </Form.Item>
-            <Form.Item
-              name="countQuiz"
-              label="Savollar soni"
-              rules={[
-                {
-                  required: true,
-                  message: "Iltimos maydonni to'ldiring",
-                },
-              ]}
-            >
-              <Input style={{ width: "300px" }} type="number" />
-            </Form.Item>
-            <Form.Item
-              name="quizTime"
-              label="Berilgan vaqt"
-              rules={[
-                {
-                  required: true,
-                  message: "Iltimos maydonni to'ldiring",
-                },
-              ]}
-            >
-              <Input style={{ width: "300px" }} type="number" />
-            </Form.Item>
-            <Form.Item>
-              <Button
-                htmlType="submit"
-                type="primary"
-                className="d-flex align-items-center"
-                icon={<PlusCircleFilled />}
-              >
-                Imtihonni qo'shish
-              </Button>
-            </Form.Item>
-          </Form>
-        </div>
+                <Input />
+              </Form.Item>
+              <Form.Item label="Xato 1" name="choice1" className="mb-1">
+                <Input />
+              </Form.Item>
+              <Form.Item label="Xato 2" name="choice2" className="mb-1">
+                <Input />
+              </Form.Item>
+              <Form.Item label="Xato 3" name="choice3" className="mb-1">
+                <Input />
+              </Form.Item>
+              <Form.Item>
+                <Button
+                  className="my-3 d-flex align-items-center"
+                  htmlType="submit"
+                  icon={<PlusOutlined />}
+                >
+                  Savolni saqlash
+                </Button>
+              </Form.Item>
+            </Form>
+          </div>
+        </Drawer>
       </div>
       <Divider orientation="center">Shu kategoriyaga Doir Savollar</Divider>
-      {questionList.length > 0 ? (
-        <Table
-          ellipsize={true}
-          style={{ width: "100%" }}
-          size="small"
-          columns={columns}
-          dataSource={questionList}
-        />
+      {questionList ? (
+        questionList.length > 0 ? (
+          <Table
+            ellipsize={true}
+            style={{ width: "100%" }}
+            size="small"
+            columns={columns}
+            dataSource={questionList}
+          />
+        ) : (
+          <h6 className="text-left">Savol qo'shilmagan!</h6>
+        )
       ) : (
-        <h6 className="text-left">Savollar yo'q</h6>
+        <Skeleton active />
       )}
     </div>
   );

@@ -13,6 +13,7 @@ import {
   Modal,
   Input,
   Select,
+  message,
 } from "antd";
 import {
   DeleteOutlined,
@@ -28,7 +29,6 @@ import {
   updateUserStart,
   updateUserSuccess,
 } from "../../redux/userSlice";
-import { toast } from "react-toastify";
 
 import { UserService } from "../../services/UserService";
 const TeacherGrStudents = () => {
@@ -55,10 +55,11 @@ const TeacherGrStudents = () => {
       await UserService.updateUser(id, {
         accessExam: !accessExam,
       });
+      message.success("Ruxsat o'zgardi");
       dispatch(updateUserSuccess());
     } catch (error) {
       dispatch(updateUserFailure());
-      toast.error(error.response.data.message);
+      message.error(error.response.data.message);
     }
   };
 
@@ -96,7 +97,7 @@ const TeacherGrStudents = () => {
         break;
       }
     }
-    if (failure) return toast.warn("Iltimos maydonni bo'sh qoldirmang.");
+    if (failure) return message.warning("Iltimos maydonni bo'sh qoldirmang.");
     let formData = new FormData();
     for (let item in values) {
       if (values[item]) {
@@ -108,10 +109,10 @@ const TeacherGrStudents = () => {
       await UserService.updateUser(tempId, formData);
       dispatch(updateUserSuccess());
       setIsUpdate(!isUpdate);
-      toast.success("Student ma'lumotlari yangilandi.");
+      message.success("Student ma'lumotlari yangilandi.");
       closeModal();
     } catch (error) {
-      toast.error(error.response.data.message);
+      message.error(error.response.data.message);
     }
   };
 
@@ -120,10 +121,10 @@ const TeacherGrStudents = () => {
     try {
       const data = await UserService.deleteUser(id);
       dispatch(deleteUserSuccess());
-      toast.success(data);
+      message.success(data);
       setIsUpdate(!isUpdate);
     } catch (error) {
-      toast.error(error.response.data.message);
+      message.error(error.response.data.message);
     }
   };
 

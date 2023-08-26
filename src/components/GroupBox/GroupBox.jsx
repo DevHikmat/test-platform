@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { toast } from "react-toastify";
 import {
   CheckOutlined,
   DeleteOutlined,
@@ -18,6 +17,8 @@ import {
   Popconfirm,
   Select,
   Switch,
+  message,
+  Drawer,
 } from "antd";
 import { GroupService } from "../../services/GroupService";
 import {
@@ -35,27 +36,21 @@ const GroupsBox = () => {
   const { groups } = useSelector((state) => state.groups);
   const { teacherList } = useSelector((state) => state.users);
   const [form] = Form.useForm();
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [open, setOpen] = useState(false);
   const [dataSource, setDataSource] = useState(null);
   const [editingRow, setEditingRow] = useState(null);
 
-  const showModal = () => {
-    setIsModalOpen(true);
-  };
-  const handleCancel = () => {
-    setIsModalOpen(false);
-  };
   const handleOk = async () => {
     let group = form.getFieldsValue();
     if (!group.name || !group.company) return;
-    setIsModalOpen(false);
+    setOpen(false);
     dispatch(addGroupStart());
     try {
       const data = await GroupService.addGroup(group);
       dispatch(addGroupSuccess());
-      toast.success(data.message);
+      message.success(data.message);
     } catch (error) {
-      toast.error(error.response.data.message);
+      message.error(error.response.data.message);
     }
     form.setFieldsValue({
       name: "",
@@ -67,7 +62,7 @@ const GroupsBox = () => {
     try {
       const data = await GroupService.deleteGroupById(id);
       dispatch(deleteGroup());
-      toast.success(data.message);
+      message.success(data.message);
     } catch (error) {
       console.log(error);
     }
@@ -97,10 +92,10 @@ const GroupsBox = () => {
     try {
       const data = await GroupService.updateGroup(editingRow, group);
       dispatch(updateGroupSuccess());
-      toast.success(data.message);
+      message.success(data.message);
       setEditingRow(null);
     } catch (error) {
-      toast.error(error.response.data.message);
+      message.error(error.response.data.message);
     }
   };
 
@@ -110,7 +105,7 @@ const GroupsBox = () => {
       const data = await GroupService.groupExamToggler(_id, {
         access: !accessExam,
       });
-      console.log(data);
+      message.success(data);
     } catch (error) {
       console.log(error);
     }
@@ -215,24 +210,23 @@ const GroupsBox = () => {
     <div className="group-box">
       <div className="row">
         <div className="col-12">
-          <Button
-            onClick={showModal}
-            className="d-flex align-items-center gap-2 mb-4"
-            icon={<PlusOutlined />}
-          >
-            Guruh qo'shish
-          </Button>
-          <Modal
-            footer={false}
+          <div className="d-flex justify-content-end">
+            <Button
+              onClick={() => setOpen(true)}
+              className="group-add-btn"
+              icon={<PlusOutlined />}
+            />
+          </div>
+          <Drawer
             title="Guruh malumotlarini kiriting"
-            open={isModalOpen}
-            onCancel={handleCancel}
+            open={open}
+            onClose={() => setOpen(false)}
+            placement="right"
           >
             <Form
-              className="mt-4"
               form={form}
               labelCol={{
-                span: 6,
+                span: 8,
               }}
               wrapperCol={{
                 span: 16,
@@ -291,19 +285,13 @@ const GroupsBox = () => {
               </Form.Item>
               <Form.Item>
                 <Row>
-                  <Col span={9}></Col>
-                  <Button
-                    onClick={handleOk}
-                    htmlType="submit"
-                    type="primary"
-                    className="mt-1"
-                  >
+                  <Button onClick={handleOk} htmlType="submit" className="mt-1">
                     Yaratish
                   </Button>
                 </Row>
               </Form.Item>
             </Form>
-          </Modal>
+          </Drawer>
         </div>
         <div className="col-12">
           <Form form={form}>

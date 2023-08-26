@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
-import { toast } from "react-toastify";
 import { message } from "antd";
 import { AuthService } from "../../services/AuthService";
 import {
@@ -37,7 +36,7 @@ const Signup = () => {
       message.success(`Salom ${data.user.firstname}!`);
     } catch (error) {
       dispatch(authUserFailure());
-      toast.error("Bunday foydalanuvchi allaqachon ro'yxatdan o'tgan!");
+      message.error("Bunday foydalanuvchi allaqachon ro'yxatdan o'tgan!");
     }
   };
   return (

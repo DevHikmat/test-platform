@@ -8,7 +8,6 @@ import { getQuizStart, getQuizSuccess } from "../../redux/quizSlice";
 import { QuizService } from "../../services/QuizService";
 import { authLogout } from "../../redux/authSlice";
 import Profile from "../../components/Profile/Profile";
-import logo from "../../static/images/logo1.png";
 import QuizBox from "../../components/QuizBox/QuizBox";
 import TeacherGrStudents from "../../components/TeacherBox/TeacherGrStudents";
 import TeacherGroups from "../../components/TeacherBox/TeacherGroups";
@@ -100,7 +99,11 @@ const Teacher = () => {
         >
           <div className="demo-logo-vertical">
             <Link to="/teacher" className="logo-box">
-              <img src={logo} alt="logo" className="img-fluid rounded-circle" />
+              <img
+                src="./images/logo/logo3.png"
+                alt="logo"
+                className="img-fluid rounded-circle"
+              />
             </Link>
           </div>
           <Menu

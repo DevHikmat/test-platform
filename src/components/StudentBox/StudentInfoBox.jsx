@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { Avatar, Switch, Button, Popconfirm, Image } from "antd";
-import { DeleteOutlined, UserOutlined } from "@ant-design/icons";
+import { Avatar, Switch, Image, message } from "antd";
+import { UserOutlined } from "@ant-design/icons";
 import { useDispatch, useSelector } from "react-redux";
-import { toast } from "react-toastify";
 import { UserService } from "../../services/UserService";
 import { updateUserStart, updateUserSuccess } from "../../redux/userSlice";
 import HistoryBox from "../HistoryBox/HistoryBox";
@@ -30,9 +29,10 @@ const StudentInfoBox = () => {
       await UserService.updateUser(id, {
         accessExam: !accessExam,
       });
+      message.success("Ruxsat o'zgardi");
       dispatch(updateUserSuccess());
     } catch (error) {
-      toast.error(error.response.data.message);
+      message.error(error.response.data.message);
     }
   };
 
@@ -43,46 +43,38 @@ const StudentInfoBox = () => {
     <div className="user-info-box">
       <div className="row">
         <div className="col-4">
-          <div className="d-flex flex-wrap gap-3">
+          <div className="d-flex flex-wrap align-items-center gap-3">
             {viewUser?.profilePicture ? (
               <Image
-                width={100}
-                height={100}
-                style={{ objectFit: "cover", borderRadius: "10px" }}
+                width={60}
+                height={60}
+                style={{ objectFit: "cover", borderRadius: "50%" }}
                 src={viewUser.profilePicture.url}
               />
             ) : (
-              <Avatar shape="square" size={100} icon={<UserOutlined />} />
+              <Avatar shape="circle" size={60} icon={<UserOutlined />} />
             )}
-            <div className="d-flex flex-column h-100 pt-3">
-              <h4 className="mb-0">
+            <div className="">
+              <h6 className="mb-0">
                 {viewUser?.firstname} {viewUser?.lastname}
-              </h4>
-              <p style={{ color: "#909090" }}>{viewUser?.email}</p>
+              </h6>
+              <p style={{ color: "#909090", marginBottom: "0" }}>
+                {viewUser?.email}
+              </p>
             </div>
           </div>
         </div>
-        <div className="col border-start">
-          <div className="d-flex justify-content-around">
-            <div className="d-flex pt-3 align-items-start flex-column h-100">
-              <h5>Imtihonga ruxsat</h5>
-              {viewUser && (
-                <Switch
-                  checkedChildren="Ha"
-                  unCheckedChildren="Yo'q"
-                  defaultChecked={viewUser.accessExam}
-                  onChange={() => toggleExamChange(viewUser.accessExam)}
-                />
-              )}
-            </div>
-            <Popconfirm
-              title="Rostdanham bu o'quvchi o'chirilsinmi?"
-              okText="ha"
-              cancelText="yo'q"
-              okType="danger"
-            >
-              <Button className="mt-3" danger icon={<DeleteOutlined />} />
-            </Popconfirm>
+        <div className="col">
+          <div className="d-flex align-items-center h-100 gap-3">
+            <strong>Imtihonga ruxsat</strong>
+            {viewUser && (
+              <Switch
+                checkedChildren="Ha"
+                unCheckedChildren="Yo'q"
+                defaultChecked={viewUser.accessExam}
+                onChange={() => toggleExamChange(viewUser.accessExam)}
+              />
+            )}
           </div>
         </div>
       </div>

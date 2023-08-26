@@ -8,7 +8,6 @@ import { QuizService } from "../../services/QuizService";
 import { UserService } from "../../services/UserService";
 import { CategoryService } from "../../services/CategoryService";
 import { getAllUsersStart, getAllUsersSuccess } from "../../redux/userSlice";
-import logo from "../../static/images/logo1.png";
 import CategoryBox from "../../components/CategoryBox/CategoryBox";
 import QuizBox from "../../components/QuizBox/QuizBox";
 import GroupsBox from "../../components/GroupBox/GroupBox";
@@ -184,7 +183,11 @@ const Admin = () => {
         >
           <div className="demo-logo-vertical">
             <Link to="/admin" className="logo-box">
-              <img src={logo} alt="logo" className="img-fluid rounded-circle" />
+              <img
+                src="./images/logo/logo3.png"
+                alt="logo"
+                className="img-fluid rounded-circle"
+              />
             </Link>
           </div>
           <Menu

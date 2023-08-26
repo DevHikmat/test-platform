@@ -1,17 +1,26 @@
-import { Button, Divider, Form, Input, Modal, Row } from "antd";
+import {
+  Button,
+  Divider,
+  Drawer,
+  Form,
+  Input,
+  Modal,
+  Row,
+  message,
+} from "antd";
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { AuthService } from "../../services/AuthService";
 import { UserService } from "../../services/UserService";
 import { getAllUsersStart, getAllUsersSuccess } from "../../redux/userSlice";
 import TeacherItem from "./TeacherItem";
-import { toast } from "react-toastify";
 import "./TeacherBox.scss";
+import { PlusOutlined } from "@ant-design/icons";
 
 const TeacherBox = () => {
   const dispatch = useDispatch();
   const { teacherList } = useSelector((state) => state.users);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [open, setOpen] = useState(false);
   const [form] = Form.useForm();
 
   const handleAddTeacher = async (values) => {
@@ -20,30 +29,48 @@ const TeacherBox = () => {
       dispatch(getAllUsersStart());
       const users = await UserService.getAllUsers();
       dispatch(getAllUsersSuccess(users));
-      setIsModalOpen(false);
-      toast.success("Ustoz qo'shildi");
+      setOpen(false);
+      message.success("Ustoz qo'shildi");
     } catch (error) {
-      toast.warn(error.response.data.message);
+      message.error(error.response.data.message);
     }
   };
 
   return (
     <div className="teacher-box">
-      <Button onClick={() => setIsModalOpen(true)}>+ Ustoz qo'shish</Button>
-      <Modal
+      <div className="d-flex justify-content-end">
+        <Button
+          className="teacher-add-btn"
+          onClick={() => setOpen(true)}
+          icon={<PlusOutlined />}
+        />
+      </div>
+      <Drawer
         title="Ustoz ma'lumotlari"
-        open={isModalOpen}
-        onCancel={() => setIsModalOpen(false)}
-        footer={false}
+        onClose={() => setOpen(false)}
+        placement="right"
+        open={open}
       >
         <Form
           onFinish={handleAddTeacher}
           form={form}
           labelAlign="left"
           labelCol={{
-            span: 4,
+            span: 7,
           }}
         >
+          <Form.Item
+            name="subject"
+            label="Fan nomi"
+            rules={[
+              {
+                required: true,
+                message: "maydonni to'ldiring",
+              },
+            ]}
+          >
+            <Input placeholder="Fan nomini kiriting" />
+          </Form.Item>
           <Form.Item
             name="firstname"
             label="Ism"
@@ -96,7 +123,7 @@ const TeacherBox = () => {
             <Button htmlType="submit">Yaratish</Button>
           </Form.Item>
         </Form>
-      </Modal>
+      </Drawer>
       <Divider>Barcha ustozlar</Divider>
       <Row gutter={24}>
         {teacherList?.map((teach, index) => {

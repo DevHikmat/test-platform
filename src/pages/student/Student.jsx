@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Routes, Route } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import logo from "../../static/images/logo1.png";
 import QuizBox from "../../components/QuizBox/QuizBox";
 import HistoryBox from "../../components/HistoryBox/HistoryBox";
 import { getQuizStart, getQuizSuccess } from "../../redux/quizSlice";
@@ -92,7 +91,6 @@ const Student = () => {
       <Layout>
         <Sider
           breakpoint="md"
-          // collapsedWidth="0"
           trigger={null}
           collapsible
           collapsed={collapsed}
@@ -101,7 +99,11 @@ const Student = () => {
         >
           <div className="demo-logo-vertical">
             <Link to={isExamStart ? "#" : "/student"} className="logo-box">
-              <img src={logo} alt="logo" className="img-fluid rounded-circle" />
+              <img
+                src="./images/logo/logo3.png"
+                alt="logo"
+                className="img-fluid rounded-circle"
+              />
             </Link>
           </div>
           <Menu

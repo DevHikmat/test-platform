@@ -14,8 +14,7 @@ import {
 } from "../../redux/userSlice";
 import { UserService } from "../../services/UserService";
 import { GroupService } from "../../services/GroupService";
-import { Col, Divider, Popconfirm, Row, Skeleton } from "antd";
-import { toast } from "react-toastify";
+import { Col, Divider, Popconfirm, Row, Skeleton, message } from "antd";
 
 const TeacherView = () => {
   const navigate = useNavigate();
@@ -54,7 +53,7 @@ const TeacherView = () => {
       await UserService.deleteUser(teacher._id);
       const data = await UserService.getAllUsers();
       dispatch(getAllUsersSuccess(data));
-      toast.success("Ustoz o'chirildi!");
+      message.success("Ustoz o'chirildi!");
       navigate("/admin/teachers/");
     } catch (error) {
       console.log(error);
@@ -97,7 +96,18 @@ const TeacherView = () => {
                     </blockquote>
                     <div className="blockquote-footer">{teacher.email}</div>
                   </figure>
-                  <p className="text-muted">Frontend mentor</p>
+                  <p className="text-muted">
+                    {teacher.subject ? (
+                      <div>
+                        <span className="text-muted">Fan nomi: </span>
+                        <span className="ms-2 text-success">
+                          {teacher.subject}
+                        </span>
+                      </div>
+                    ) : (
+                      <span className="text-warning">Fan kiritilmagan</span>
+                    )}
+                  </p>
                   <Popconfirm
                     title={
                       teacher.firstname +

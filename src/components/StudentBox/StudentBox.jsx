@@ -11,6 +11,7 @@ import {
   Image,
   Avatar,
   Divider,
+  message,
 } from "antd";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -19,7 +20,6 @@ import {
   EyeOutlined,
   UserOutlined,
 } from "@ant-design/icons";
-import { toast } from "react-toastify";
 import { Link } from "react-router-dom";
 import { UserService } from "../../services/UserService";
 import {
@@ -69,7 +69,7 @@ const StudentBox = () => {
         break;
       }
     }
-    if (failure) return toast.warn("Iltimos maydonni bo'sh qoldirmang.");
+    if (failure) return message.warning("Iltimos maydonni bo'sh qoldirmang.");
     for (let item in values) {
       if (values[item]) {
         formData.append(`${item}`, values[item]);
@@ -82,10 +82,10 @@ const StudentBox = () => {
       const data = await UserService.updateUser(tempId, formData);
       console.log(data);
       dispatch(updateUserSuccess());
-      toast.success("Student ma'lumotlari yangilandi.");
+      message.success("Student ma'lumotlari yangilandi.");
       closeModal();
     } catch (error) {
-      toast.error(error.response.data.message);
+      message.error(error.response.data.message);
     }
   };
 
@@ -94,9 +94,9 @@ const StudentBox = () => {
     try {
       const data = await UserService.deleteUser(id);
       dispatch(deleteUserSuccess());
-      toast.success(data);
+      message.success(data);
     } catch (error) {
-      toast.error(error.response.data.message);
+      message.error(error.response.data.message);
     }
   };
 
@@ -108,7 +108,7 @@ const StudentBox = () => {
       });
       dispatch(updateUserSuccess());
     } catch (error) {
-      toast.error(error.response.data.message);
+      message.error(error.response.data.message);
     }
   };
 
