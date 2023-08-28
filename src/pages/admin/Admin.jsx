@@ -1,5 +1,5 @@
 import { MenuFoldOutlined, MenuUnfoldOutlined } from "@ant-design/icons";
-import { Button, Image, Layout, Menu, theme } from "antd";
+import { Button, Image, Layout, Menu, message, theme } from "antd";
 import { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Routes, Route } from "react-router-dom";
@@ -7,13 +7,22 @@ import { useSelector, useDispatch } from "react-redux";
 import { QuizService } from "../../services/QuizService";
 import { UserService } from "../../services/UserService";
 import { CategoryService } from "../../services/CategoryService";
-import { getAllUsersStart, getAllUsersSuccess } from "../../redux/userSlice";
+import {
+  changeUserFailure,
+  changeUserStart,
+  getAllUsersSuccess,
+} from "../../redux/userSlice";
 import CategoryBox from "../../components/CategoryBox/CategoryBox";
 import QuizBox from "../../components/QuizBox/QuizBox";
 import GroupsBox from "../../components/GroupBox/GroupBox";
-import { getQuizStart, getQuizSuccess } from "../../redux/quizSlice";
 import {
-  getAllCategoryStart,
+  changeQuizFailure,
+  changeQuizStart,
+  getQuizSuccess,
+} from "../../redux/quizSlice";
+import {
+  changeCategoryFailure,
+  changeCategoryStart,
   getAllCategorySuccess,
 } from "../../redux/categorySlice";
 import CategoryView from "../../components/CategoryBox/CategoryView";
@@ -41,32 +50,35 @@ const Admin = () => {
   } = theme.useToken();
 
   const handleAllUsers = async () => {
-    dispatch(getAllUsersStart());
+    dispatch(changeUserStart());
     try {
       let data = await UserService.getAllUsers();
       data = data.filter((user) => user.role !== "admin");
       dispatch(getAllUsersSuccess(data));
     } catch (error) {
-      console.log(error);
+      message.error(error.response.data.message);
+      dispatch(changeUserFailure());
     }
   };
 
   const handleAllQuiz = async () => {
-    dispatch(getQuizStart());
+    dispatch(changeQuizStart());
     try {
       const data = await QuizService.getAllQuiz();
       dispatch(getQuizSuccess(data.quizzes));
     } catch (error) {
-      console.log(error);
+      message.error(error.response.data.message);
+      dispatch(changeQuizFailure());
     }
   };
   const handleAllCategory = async () => {
-    dispatch(getAllCategoryStart());
+    dispatch(changeCategoryStart());
     try {
       const data = await CategoryService.getAllCategory();
       dispatch(getAllCategorySuccess(data.categories));
     } catch (error) {
-      console.log(error);
+      message.error(error.response.data.message);
+      dispatch(changeCategoryFailure());
     }
   };
 
@@ -184,7 +196,7 @@ const Admin = () => {
           <div className="demo-logo-vertical">
             <Link to="/admin" className="logo-box">
               <img
-                src="./images/logo/logo3.png"
+                src="/static/logo3.png"
                 alt="logo"
                 className="img-fluid rounded-circle"
               />

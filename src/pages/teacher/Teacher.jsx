@@ -1,10 +1,15 @@
 import { MenuFoldOutlined, MenuUnfoldOutlined } from "@ant-design/icons";
-import { Button, Image, Layout, Menu, theme } from "antd";
+import { Button, Image, Layout, Menu, message, theme } from "antd";
 import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Routes, Route } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { getQuizStart, getQuizSuccess } from "../../redux/quizSlice";
+import {
+  changeQuizFailure,
+  changeQuizStart,
+  changeQuizSuccess,
+  getQuizSuccess,
+} from "../../redux/quizSlice";
 import { QuizService } from "../../services/QuizService";
 import { authLogout } from "../../redux/authSlice";
 import Profile from "../../components/Profile/Profile";
@@ -32,7 +37,7 @@ const Teacher = () => {
   };
 
   const handleGetAllQuiz = async () => {
-    dispatch(getQuizStart());
+    dispatch(changeQuizStart());
     try {
       const data = await QuizService.getAllQuiz();
       dispatch(
@@ -40,8 +45,10 @@ const Teacher = () => {
           data.quizzes.map((que, index) => ({ ...que, key: index }))
         )
       );
+      dispatch(changeQuizSuccess());
     } catch (error) {
-      console.log(error);
+      message.error(error.response.data.message);
+      dispatch(changeQuizFailure());
     }
   };
 
@@ -100,7 +107,7 @@ const Teacher = () => {
           <div className="demo-logo-vertical">
             <Link to="/teacher" className="logo-box">
               <img
-                src="./images/logo/logo3.png"
+                src="/static/logo3.png"
                 alt="logo"
                 className="img-fluid rounded-circle"
               />

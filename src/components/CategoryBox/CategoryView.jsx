@@ -10,17 +10,14 @@ import {
   message,
 } from "antd";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { DeleteOutlined } from "@ant-design/icons";
 import { QuestionService } from "../../services/QuestionService";
 import {
-  addQuestionStart,
-  addQuestionSuccess,
-  deleteQuestionStart,
-  deleteQuestionSuccess,
-  getAllQuestionStart,
-  getAllQuestionSuccess,
+  changeQueFailure,
+  changeQueStart,
+  changeQueSuccess,
 } from "../../redux/questionSlice";
 const { TextArea } = Input;
 
@@ -30,7 +27,6 @@ const CategoryView = () => {
   const { isChange, isLoading } = useSelector((state) => state.question);
   const [form] = Form.useForm();
   const dispatch = useDispatch();
-  const navigate = useNavigate();
 
   const [open, setOpen] = useState(false);
   const showDrawer = () => {
@@ -41,7 +37,6 @@ const CategoryView = () => {
   };
 
   const handleAllQuestion = async () => {
-    dispatch(getAllQuestionStart());
     try {
       const data = await QuestionService.getAllQuestions();
       setQuestionList(
@@ -49,9 +44,8 @@ const CategoryView = () => {
           .filter((que) => que.category === id)
           .map((item, index) => ({ ...item, key: index + 1 }))
       );
-      dispatch(getAllQuestionSuccess());
     } catch (error) {
-      console.log(error);
+      message.error(error.response.data.message);
     }
   };
 
@@ -65,7 +59,7 @@ const CategoryView = () => {
       return message.warning(
         "To'g'ri javob uzunligi 3 dan kam bo'lmasligi kerak!"
       );
-    dispatch(addQuestionStart());
+    dispatch(changeQueStart());
     try {
       let formData = new FormData();
       formData.append("quizQuestion", quizQuestion);
@@ -75,7 +69,7 @@ const CategoryView = () => {
       formData.append("choice3", choice3);
       formData.append("category", id);
       const data = await QuestionService.addQuestion(formData);
-      dispatch(addQuestionSuccess());
+      dispatch(changeQueSuccess());
       message.success(data.message);
       form.setFieldsValue({
         quizQuestion: "",
@@ -85,19 +79,20 @@ const CategoryView = () => {
         choice3: "",
       });
     } catch (error) {
-      console.log(error);
       message.error(error.response.data.message);
+      dispatch(changeQueFailure());
     }
   };
 
   const handleDeleteQuestion = async (id) => {
-    dispatch(deleteQuestionStart());
+    dispatch(changeQueStart());
     try {
       const data = await QuestionService.deleteQuestion(id);
-      console.log(data);
-      dispatch(deleteQuestionSuccess());
+      message.success(data.message);
+      dispatch(changeQueSuccess());
     } catch (error) {
-      console.log(error.response.data.message);
+      message.error(error.response.data.message);
+      dispatch(changeQueFailure());
     }
   };
 

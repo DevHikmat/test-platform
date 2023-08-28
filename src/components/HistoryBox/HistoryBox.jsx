@@ -1,7 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { Divider, Skeleton, Table } from "antd";
+import { Divider, Skeleton, Table, message } from "antd";
 import { useDispatch, useSelector } from "react-redux";
-import { getOneUserFailure, getOneUserStart } from "../../redux/userSlice";
+import {
+  changeUserFailure,
+  changeUserStart,
+  changeUserSuccess,
+} from "../../redux/userSlice";
 import { UserService } from "../../services/UserService";
 import { useParams } from "react-router-dom";
 const columns = [
@@ -45,13 +49,14 @@ const HistoryBox = () => {
   const getOneUser = async () => {
     let tempData;
     if (currentUser.role !== "student") {
-      dispatch(getOneUserStart());
+      dispatch(changeUserStart());
       try {
         const data = await UserService.getOneUser(id);
         tempData = data.history;
+        dispatch(changeUserSuccess());
       } catch (error) {
-        console.log(error);
-        dispatch(getOneUserFailure());
+        message.error(error.response.data.message);
+        dispatch(changeUserFailure());
       }
     } else {
       tempData = currentUser.history;
@@ -67,7 +72,7 @@ const HistoryBox = () => {
     <div className="history-box pt-3">
       <Divider>Imtihonlar tarixi</Divider>
       {history ? (
-        history?.length > 0 ? (
+        history.length > 0 ? (
           <div>
             <Table
               scroll={{ x: 900 }}
@@ -82,7 +87,7 @@ const HistoryBox = () => {
           </div>
         )
       ) : (
-        <Skeleton className="mt-5" active />
+        <Skeleton active />
       )}
     </div>
   );

@@ -4,9 +4,9 @@ import { quizFinishSuccess } from "../../redux/quizSlice";
 import { v4 as uuidv4 } from "uuid";
 import moment from "moment";
 import {
-  authUpdateStart,
-  authUpdateSuccess,
-  authUpdateFailure,
+  authChangeStart,
+  authChangeSuccess,
+  authChangeFailure,
 } from "../../redux/authSlice";
 import { UserService } from "../../services/UserService";
 
@@ -29,7 +29,7 @@ const QuizTimer = ({ studentAnswers }) => {
     return () => {
       clearTimeout(timer);
     };
-  }, []);
+  }, [currentQuiz]);
 
   useEffect(() => {
     const interval = setInterval(() => countDown(interval), 1000);
@@ -91,7 +91,7 @@ const QuizTimer = ({ studentAnswers }) => {
     };
     const handleAddHistory = async () => {
       const data = await getCurrentTime();
-      dispatch(authUpdateStart());
+      dispatch(authChangeStart());
       try {
         let examResult = {
           id: uuidv4(),
@@ -106,10 +106,10 @@ const QuizTimer = ({ studentAnswers }) => {
         };
         const id = localStorage.getItem("id");
         const updatedUser = await UserService.updateUser(id, currentUser);
-        dispatch(authUpdateSuccess(updatedUser));
+        dispatch(authChangeSuccess(updatedUser));
       } catch (error) {
         console.error("Error fetching global time:", error);
-        dispatch(authUpdateFailure());
+        dispatch(authChangeFailure());
       }
     };
     handleAddHistory();

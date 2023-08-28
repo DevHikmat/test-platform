@@ -4,7 +4,11 @@ import { Avatar, Switch, Image, message } from "antd";
 import { UserOutlined } from "@ant-design/icons";
 import { useDispatch, useSelector } from "react-redux";
 import { UserService } from "../../services/UserService";
-import { updateUserStart, updateUserSuccess } from "../../redux/userSlice";
+import {
+  changeUserFailure,
+  changeUserStart,
+  changeUserSuccess,
+} from "../../redux/userSlice";
 import HistoryBox from "../HistoryBox/HistoryBox";
 import "./StudentInfoBox.scss";
 
@@ -24,15 +28,16 @@ const StudentInfoBox = () => {
   };
 
   const toggleExamChange = async (accessExam) => {
-    dispatch(updateUserStart());
+    dispatch(changeUserStart());
     try {
       await UserService.updateUser(id, {
         accessExam: !accessExam,
       });
       message.success("Ruxsat o'zgardi");
-      dispatch(updateUserSuccess());
+      dispatch(changeUserSuccess());
     } catch (error) {
       message.error(error.response.data.message);
+      dispatch(changeUserFailure());
     }
   };
 

@@ -1,16 +1,27 @@
 import { MenuFoldOutlined, MenuUnfoldOutlined } from "@ant-design/icons";
-import { Button, Image, Layout, Menu, theme } from "antd";
+import { Button, Image, Layout, Menu, message, theme } from "antd";
 import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Routes, Route } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import QuizBox from "../../components/QuizBox/QuizBox";
 import HistoryBox from "../../components/HistoryBox/HistoryBox";
-import { getQuizStart, getQuizSuccess } from "../../redux/quizSlice";
+import {
+  changeQuizFailure,
+  changeQuizStart,
+  changeQuizSuccess,
+  getQuizSuccess,
+} from "../../redux/quizSlice";
 import { QuizService } from "../../services/QuizService";
 import QuizStudentView from "../../components/QuizBox/QuizStudentView";
 import { authLogout } from "../../redux/authSlice";
 import Profile from "../../components/Profile/Profile";
+import {
+  changeCategoryFailure,
+  changeCategoryStart,
+  getAllCategorySuccess,
+} from "../../redux/categorySlice";
+import { CategoryService } from "../../services/CategoryService";
 const { Header, Sider, Content } = Layout;
 
 const Student = () => {
@@ -33,7 +44,7 @@ const Student = () => {
   };
 
   const handleGetAllQuiz = async () => {
-    dispatch(getQuizStart());
+    dispatch(changeQuizStart());
     try {
       const data = await QuizService.getAllQuiz();
       dispatch(
@@ -41,8 +52,21 @@ const Student = () => {
           data.quizzes.map((que, index) => ({ ...que, key: index }))
         )
       );
+      dispatch(changeQuizSuccess());
     } catch (error) {
-      console.log(error);
+      message.error(error.response.data.message);
+      dispatch(changeQuizFailure());
+    }
+  };
+
+  const handleAllCategory = async () => {
+    dispatch(changeCategoryStart());
+    try {
+      const data = await CategoryService.getAllCategory();
+      dispatch(getAllCategorySuccess(data.categories));
+    } catch (error) {
+      message.error(error.response.data.message);
+      dispatch(changeCategoryFailure());
     }
   };
 
@@ -53,6 +77,7 @@ const Student = () => {
   useEffect(() => {
     handleGetAllQuiz();
     toggleSiderMenu();
+    handleAllCategory();
   }, []);
 
   const items = [
@@ -100,7 +125,7 @@ const Student = () => {
           <div className="demo-logo-vertical">
             <Link to={isExamStart ? "#" : "/student"} className="logo-box">
               <img
-                src="./images/logo/logo3.png"
+                src="/static/logo3.png"
                 alt="logo"
                 className="img-fluid rounded-circle"
               />

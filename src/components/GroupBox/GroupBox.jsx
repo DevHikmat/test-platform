@@ -8,11 +8,9 @@ import {
 } from "@ant-design/icons";
 import {
   Button,
-  Modal,
   Form,
   Input,
   Row,
-  Col,
   Table,
   Popconfirm,
   Select,
@@ -22,11 +20,9 @@ import {
 } from "antd";
 import { GroupService } from "../../services/GroupService";
 import {
-  addGroupStart,
-  addGroupSuccess,
-  deleteGroup,
-  updateGroupStart,
-  updateGroupSuccess,
+  changeGroupFailure,
+  changeGroupStart,
+  changeGroupSuccess,
 } from "../../redux/groupSlice";
 import "./GroupBox.scss";
 const { Option } = Select;
@@ -44,27 +40,30 @@ const GroupsBox = () => {
     let group = form.getFieldsValue();
     if (!group.name || !group.company) return;
     setOpen(false);
-    dispatch(addGroupStart());
+    dispatch(changeGroupStart());
     try {
       const data = await GroupService.addGroup(group);
-      dispatch(addGroupSuccess());
+      dispatch(changeGroupSuccess());
       message.success(data.message);
+      form.setFieldsValue({
+        name: "",
+        company: "",
+      });
     } catch (error) {
       message.error(error.response.data.message);
+      dispatch(changeGroupFailure());
     }
-    form.setFieldsValue({
-      name: "",
-      company: "",
-    });
   };
 
   const handleDeleteGroup = async (id) => {
+    dispatch(changeGroupStart());
     try {
       const data = await GroupService.deleteGroupById(id);
-      dispatch(deleteGroup());
-      message.success(data.message);
+      dispatch(changeGroupSuccess());
+      message.success(data);
     } catch (error) {
-      console.log(error);
+      message.error(error.response.data.message);
+      dispatch(changeGroupFailure());
     }
   };
 
@@ -86,28 +85,32 @@ const GroupsBox = () => {
   };
 
   const saveChanges = async () => {
-    dispatch(updateGroupStart());
+    dispatch(changeGroupStart());
     let { editName, editCompany } = form.getFieldsValue();
     let group = { name: editName, company: editCompany };
     try {
       const data = await GroupService.updateGroup(editingRow, group);
-      dispatch(updateGroupSuccess());
+      dispatch(changeGroupSuccess());
       message.success(data.message);
       setEditingRow(null);
     } catch (error) {
       message.error(error.response.data.message);
+      dispatch(changeGroupFailure());
     }
   };
 
   const handleAccessGroup = async (group) => {
     const { _id, accessExam } = group;
+    dispatch(changeGroupStart());
     try {
       const data = await GroupService.groupExamToggler(_id, {
         access: !accessExam,
       });
-      message.success(data);
+      dispatch(changeGroupSuccess());
+      message.success(data.message);
     } catch (error) {
-      console.log(error);
+      message.error(error.response.data.message);
+      dispatch(changeGroupFailure());
     }
   };
 
@@ -245,7 +248,7 @@ const GroupsBox = () => {
                   },
                 ]}
               >
-                <Select defaultValue={"Tanlash"}>
+                <Select placeholder="Tanlash">
                   {teacherList?.map((teach, index) => {
                     return (
                       <Option key={index} value={teach._id}>
@@ -277,7 +280,7 @@ const GroupsBox = () => {
                   },
                 ]}
               >
-                <Select defaultValue={"Tanlash"}>
+                <Select placeholder="Tanlash">
                   <Option value="Webstar">Webstar</Option>
                   <Option value="Mars">Mars</Option>
                   <Option value="Merit">Merit</Option>

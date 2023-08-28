@@ -10,34 +10,18 @@ export const questionSlice = createSlice({
   name: "questionList",
   initialState,
   reducers: {
-    getAllQuestionStart: (state) => {
+    changeQueStart: (state) => {
       state.isLoading = true;
     },
-    getAllQuestionSuccess: (state) => {
-      state.isLoading = false;
-    },
-    addQuestionStart: (state) => {
-      state.isLoading = true;
-    },
-    addQuestionSuccess: (state) => {
+    changeQueSuccess: (state) => {
       state.isLoading = false;
       state.isChange = !state.isChange;
     },
-    deleteQuestionStart: (state) => {
-      state.isLoading = true;
-    },
-    deleteQuestionSuccess: (state) => {
+    changeQueFailure: (state) => {
       state.isLoading = false;
-      state.isChange = !state.isChange;
     },
   },
 });
-export const {
-  getAllQuestionStart,
-  getAllQuestionSuccess,
-  addQuestionStart,
-  addQuestionSuccess,
-  deleteQuestionStart,
-  deleteQuestionSuccess,
-} = questionSlice.actions;
+export const { changeQueStart, changeQueSuccess, changeQueFailure } =
+  questionSlice.actions;
 export default questionSlice.reducer;

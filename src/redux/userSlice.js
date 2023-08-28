@@ -12,8 +12,15 @@ const userSlice = createSlice({
   initialState,
   reducers: {
     // GET ALL USERS
-    getAllUsersStart: (state) => {
+    changeUserStart: (state) => {
       state.isLoading = true;
+    },
+    changeUserSuccess: (state) => {
+      state.isLoading = false;
+      state.isChange = !state.isChange;
+    },
+    changeUserFailure: (state) => {
+      state.isLoading = false;
     },
     getAllUsersSuccess: (state, action) => {
       state.isLoading = false;
@@ -24,61 +31,12 @@ const userSlice = createSlice({
         .filter((user) => user.role === "teacher")
         .map((item, index) => ({ ...item, key: index + 1 }));
     },
-    // VIEW ONE USER
-    getOneUserStart: (state) => {
-      state.isLoading = true;
-    },
-    getOneUserSuccess: (state) => {
-      state.isLoading = false;
-    },
-    getOneUserFailure: (state) => {
-      state.isLoading = false;
-    },
-    // UPDATE USER
-    updateUserStart: (state) => {
-      state.isLoading = true;
-    },
-    updateUserSuccess: (state) => {
-      state.isLoading = false;
-      state.isChange = !state.isChange;
-    },
-    updateUserFailure: (state, action) => {
-      state.isLoading = false;
-      state.error = action.payload;
-    },
-    //DELETE USER
-    deleteUserStart: (state) => {
-      state.isLoading = true;
-    },
-    deleteUserSuccess: (state) => {
-      state.isLoading = false;
-      state.isChange = !state.isChange;
-    },
-    // GET TEACHER GROUPS
-    getTeacherGroupStart: (state) => {
-      state.isLoading = true;
-    },
-    getTeacherGroupSuccess: (state) => {
-      state.isLoading = false;
-    },
-    getTeacherGroupFailure: (state) => {
-      state.isLoading = false;
-    },
   },
 });
 export const {
-  getAllUsersStart,
+  changeUserStart,
+  changeUserSuccess,
+  changeUserFailure,
   getAllUsersSuccess,
-  getOneUserStart,
-  getOneUserSuccess,
-  getOneUserFailure,
-  updateUserStart,
-  updateUserSuccess,
-  updateUserFailure,
-  deleteUserStart,
-  deleteUserSuccess,
-  getTeacherGroupStart,
-  getTeacherGroupSuccess,
-  getTeacherGroupFailure,
 } = userSlice.actions;
 export default userSlice.reducer;

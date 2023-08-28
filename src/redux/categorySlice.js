@@ -11,13 +11,6 @@ export const categorySlice = createSlice({
   name: "category",
   initialState,
   reducers: {
-    getAllCategoryStart: (state) => {
-      state.isLoading = true;
-    },
-    getAllCategorySuccess: (state, action) => {
-      state.isLoading = false;
-      state.category = action.payload;
-    },
     changeCategoryStart: (state) => {
       state.isLoading = true;
     },
@@ -28,23 +21,16 @@ export const categorySlice = createSlice({
     changeCategoryFailure: (state) => {
       state.isLoading = false;
     },
-
-    deleteCategoryStart: (state) => {
-      state.isLoading = true;
-    },
-    deleteCategorySuccess: (state) => {
+    getAllCategorySuccess: (state, action) => {
       state.isLoading = false;
-      state.isChange = !state.isChange;
+      state.category = action.payload;
     },
   },
 });
 export const {
-  getAllCategoryStart,
-  getAllCategorySuccess,
   changeCategoryStart,
   changeCategorySuccess,
-  deleteCategoryStart,
-  deleteCategorySuccess,
   changeCategoryFailure,
+  getAllCategorySuccess,
 } = categorySlice.actions;
 export default categorySlice.reducer;

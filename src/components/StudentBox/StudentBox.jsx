@@ -23,10 +23,9 @@ import {
 import { Link } from "react-router-dom";
 import { UserService } from "../../services/UserService";
 import {
-  deleteUserStart,
-  deleteUserSuccess,
-  updateUserStart,
-  updateUserSuccess,
+  changeUserFailure,
+  changeUserStart,
+  changeUserSuccess,
 } from "../../redux/userSlice";
 import "./StudentBox.scss";
 
@@ -77,38 +76,41 @@ const StudentBox = () => {
     }
     if (avatar_rf.current.files)
       formData.append("profilePicture", avatar_rf.current.files[0]);
-    dispatch(updateUserStart());
+    dispatch(changeUserStart());
     try {
       const data = await UserService.updateUser(tempId, formData);
       console.log(data);
-      dispatch(updateUserSuccess());
+      dispatch(changeUserSuccess());
       message.success("Student ma'lumotlari yangilandi.");
       closeModal();
     } catch (error) {
       message.error(error.response.data.message);
+      dispatch(changeUserFailure());
     }
   };
 
   const handleDeleteUser = async (id) => {
-    dispatch(deleteUserStart());
+    dispatch(changeUserStart());
     try {
       const data = await UserService.deleteUser(id);
-      dispatch(deleteUserSuccess());
+      dispatch(changeUserSuccess());
       message.success(data);
     } catch (error) {
       message.error(error.response.data.message);
+      dispatch(changeUserFailure());
     }
   };
 
   const toggleExamChange = async (id, accessExam) => {
-    dispatch(updateUserStart());
+    dispatch(changeUserStart());
     try {
       await UserService.updateUser(id, {
         accessExam: !accessExam,
       });
-      dispatch(updateUserSuccess());
+      dispatch(changeUserSuccess());
     } catch (error) {
       message.error(error.response.data.message);
+      dispatch(changeUserFailure());
     }
   };
 

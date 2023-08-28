@@ -4,14 +4,14 @@ import { useDispatch, useSelector } from "react-redux";
 import { GroupService } from "./services/GroupService";
 import { UserService } from "./services/UserService";
 import {
-  getGroupsStart,
   getGroupsSuccess,
-  getGroupsFailure,
+  changeGroupStart,
+  changeGroupFailure,
 } from "./redux/groupSlice";
 import {
-  authUserStart,
-  authUserSuccess,
-  authUserFailure,
+  authChangeStart,
+  authChangeSuccess,
+  authChangeFailure,
 } from "./redux/authSlice";
 import Login from "./pages/login/Login";
 import Signup from "./pages/signup/Signup";
@@ -19,6 +19,7 @@ import Student from "./pages/student/Student";
 import Admin from "./pages/admin/Admin";
 import Teacher from "./pages/teacher/Teacher";
 import { setAxiosInstanceToken } from "./services/axiosInstance";
+import { message } from "antd";
 
 function App() {
   const { isLogin } = useSelector((state) => state.auth);
@@ -32,18 +33,19 @@ function App() {
   let studentRoute = [{ path: "/student/*", element: <Student /> }];
 
   const handleGroups = async () => {
-    dispatch(getGroupsStart());
+    dispatch(changeGroupStart());
     try {
       const data = await GroupService.getAllGroups();
       dispatch(getGroupsSuccess(data.groups));
     } catch (error) {
-      dispatch(getGroupsFailure(error.response.data.message));
+      message.error(error.response.data.message);
+      dispatch(changeGroupFailure());
     }
   };
 
   const getCurrentUser = async (token) => {
     setAxiosInstanceToken(token);
-    dispatch(authUserStart());
+    dispatch(authChangeStart());
     const id = localStorage.getItem("id");
     try {
       const data = await UserService.getOneUser(id);
@@ -57,10 +59,10 @@ function App() {
         setProtectedRoute(studentRoute);
         !location.pathname.startsWith("/student") && navigate("/student");
       }
-      dispatch(authUserSuccess(data));
+      dispatch(authChangeSuccess(data));
     } catch (error) {
       console.log(error);
-      dispatch(authUserFailure());
+      dispatch(authChangeFailure());
       navigate("/login");
     }
   };

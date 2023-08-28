@@ -23,11 +23,11 @@ import {
 } from "@ant-design/icons";
 import { useDispatch, useSelector } from "react-redux";
 import {
+  changeUserFailure,
+  changeUserStart,
+  changeUserSuccess,
   deleteUserStart,
   deleteUserSuccess,
-  updateUserFailure,
-  updateUserStart,
-  updateUserSuccess,
 } from "../../redux/userSlice";
 
 import { UserService } from "../../services/UserService";
@@ -50,15 +50,15 @@ const TeacherGrStudents = () => {
   };
 
   const toggleExamChange = async (id, accessExam) => {
-    dispatch(updateUserStart());
+    dispatch(changeUserStart());
     try {
       await UserService.updateUser(id, {
         accessExam: !accessExam,
       });
       message.success("Ruxsat o'zgardi");
-      dispatch(updateUserSuccess());
+      dispatch(changeUserSuccess());
     } catch (error) {
-      dispatch(updateUserFailure());
+      dispatch(changeUserFailure());
       message.error(error.response.data.message);
     }
   };
@@ -104,27 +104,29 @@ const TeacherGrStudents = () => {
         formData.append(`${item}`, values[item]);
       }
     }
-    dispatch(updateUserStart());
+    dispatch(changeUserStart());
     try {
       await UserService.updateUser(tempId, formData);
-      dispatch(updateUserSuccess());
+      dispatch(changeUserSuccess());
       setIsUpdate(!isUpdate);
       message.success("Student ma'lumotlari yangilandi.");
       closeModal();
     } catch (error) {
       message.error(error.response.data.message);
+      dispatch(changeUserFailure());
     }
   };
 
   const handleDeleteUser = async (id) => {
-    dispatch(deleteUserStart());
+    dispatch(changeUserStart());
     try {
       const data = await UserService.deleteUser(id);
-      dispatch(deleteUserSuccess());
+      dispatch(changeUserSuccess());
       message.success(data);
       setIsUpdate(!isUpdate);
     } catch (error) {
       message.error(error.response.data.message);
+      dispatch(changeUserFailure());
     }
   };
 

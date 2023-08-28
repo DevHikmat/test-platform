@@ -1,7 +1,7 @@
 import React, { useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Button, Drawer, Form, Modal, Row, message } from "antd";
-import { MinusOutlined, PlusOutlined, SendOutlined } from "@ant-design/icons";
+import { Button, Drawer, Modal, Row, message } from "antd";
+import { PlusOutlined, SendOutlined } from "@ant-design/icons";
 import CategoryItem from "./CategoryItem";
 import "./Category.scss";
 import {
@@ -42,6 +42,7 @@ const CategoryBox = () => {
       setOpen(false);
     } catch (error) {
       message.error(error.response.data.message);
+      dispatch(changeCategoryFailure());
     }
   };
 

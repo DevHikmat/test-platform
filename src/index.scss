@@ -101,6 +101,21 @@ a {
 // Mobile
 @media only screen and (max-width: 576px) {
   .ant-layout {
+    aside {
+      .demo-logo-vertical {
+        padding: 0;
+        margin-bottom: 30px;
+      }
+      min-width: 50px !important;
+      flex: 0 0 50px !important;
+      .ant-menu {
+        &-item {
+          i {
+            font-size: 16px !important;
+          }
+        }
+      }
+    }
     header {
       button {
         visibility: hidden;

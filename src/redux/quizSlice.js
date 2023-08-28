@@ -18,36 +18,23 @@ export const quizSlice = createSlice({
   name: "quiz",
   initialState,
   reducers: {
-    getQuizStart: (state) => {
+    changeQuizStart: (state) => {
       state.isLoading = true;
+    },
+    changeQuizSuccess: (state) => {
+      state.isLoading = false;
+      state.isChange = !state.isChange;
+    },
+    changeQuizFailure: (state) => {
+      state.isLoading = false;
     },
     getQuizSuccess: (state, action) => {
       state.isLoading = false;
       state.quizList = action.payload;
     },
-    getOneQuizStart: (state) => {
-      state.isLoading = true;
-    },
     getOneQuizSuccess: (state, action) => {
       state.isLoading = false;
       state.currentQuiz = action.payload;
-    },
-    addQuizStart: (state) => {
-      state.isLoading = true;
-    },
-    addQuizSuccess: (state) => {
-      state.isLoading = false;
-      state.isChange = !state.isChange;
-    },
-    addQuizFailure: (state) => {
-      state.isLoading = false;
-    },
-    deleteQuizStart: (state) => {
-      state.isLoading = true;
-    },
-    deleteQuizSuccess: (state) => {
-      state.isLoading = false;
-      state.isChange = !state.isChange;
     },
     quizExamStart: (state) => {
       state.isExamStart = true;
@@ -61,15 +48,11 @@ export const quizSlice = createSlice({
   },
 });
 export const {
-  getQuizStart,
+  changeQuizStart,
+  changeQuizSuccess,
+  changeQuizFailure,
   getQuizSuccess,
-  getOneQuizStart,
   getOneQuizSuccess,
-  addQuizStart,
-  addQuizSuccess,
-  deleteQuizStart,
-  deleteQuizSuccess,
-  addQuizFailure,
   quizExamStart,
   quizFinishSuccess,
 } = quizSlice.actions;

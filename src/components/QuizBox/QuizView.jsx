@@ -1,27 +1,25 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
-import { useNavigate, useParams } from "react-router-dom";
-import { Divider, Table, Button, Popconfirm } from "antd";
+import { useParams } from "react-router-dom";
+import { Divider, Table, message } from "antd";
 import {
-  deleteQuizStart,
-  deleteQuizSuccess,
-  getOneQuizStart,
-  getOneQuizSuccess,
+  changeQuizFailure,
+  changeQuizStart,
+  changeQuizSuccess,
 } from "../../redux/quizSlice";
 import { QuizService } from "../../services/QuizService";
 
 const QuizView = () => {
   const [currentQuiz, setCurrentQuiz] = useState(null);
-  const navigate = useNavigate();
   const [questionList, setQuestionList] = useState([]);
   const { id } = useParams();
   const dispatch = useDispatch();
 
   const handleGetOneQuiz = async () => {
-    dispatch(getOneQuizStart());
+    dispatch(changeQuizStart());
     try {
       const data = await QuizService.getOneQuiz(id);
-      dispatch(getOneQuizSuccess());
+      dispatch(changeQuizSuccess());
       setQuestionList(
         data.quizzes[0].questions.map((que, index) => ({
           ...que,
@@ -30,18 +28,8 @@ const QuizView = () => {
       );
       setCurrentQuiz(data.quizzes[0]);
     } catch (error) {
-      console.log(error.response.data.message);
-    }
-  };
-
-  const handleDelete = async (id) => {
-    dispatch(deleteQuizStart());
-    try {
-      const data = await QuizService.deleteQuiz(id);
-      navigate("/admin/quiz");
-      dispatch(deleteQuizSuccess());
-    } catch (error) {
-      console.log(error.response.data.message);
+      message.error(error.response.data.message);
+      dispatch(changeQuizFailure());
     }
   };
 
@@ -76,15 +64,6 @@ const QuizView = () => {
       <div className="quiz-view">
         <div className="d-flex justify-content-between align-items-center">
           <h3>{currentQuiz.title}</h3>
-          <Popconfirm
-            okType="danger"
-            title="O'chirilsinmi ?"
-            okText="Ha"
-            cancelText="Yo'q"
-            onConfirm={() => handleDelete(currentQuiz._id)}
-          >
-            <Button danger>Imtihonni o'chirish</Button>
-          </Popconfirm>
         </div>
         <ul className="list-unstyled list-group list-group-horizontal gap-5">
           <li>

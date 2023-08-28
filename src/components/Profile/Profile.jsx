@@ -1,12 +1,12 @@
-import { Button, Form, Image, Input, Modal } from "antd";
+import { Button, Form, Image, Input, Modal, message } from "antd";
 import React, { memo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { SettingOutlined } from "@ant-design/icons";
 import "./Profile.scss";
 import {
-  authUpdateFailure,
-  authUpdateStart,
-  authUpdateSuccess,
+  authChangeFailure,
+  authChangeStart,
+  authChangeSuccess,
 } from "../../redux/authSlice";
 import { UserService } from "../../services/UserService";
 import HistoryBox from "../HistoryBox/HistoryBox";
@@ -19,23 +19,22 @@ const Profile = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleUploadImage = async (e) => {
-    dispatch(authUpdateStart());
+    dispatch(authChangeStart());
     try {
       let formData = new FormData();
       formData.append("profilePicture", e.target.files[0]);
       currentUser.profilePicture &&
         formData.append("public_id", currentUser.profilePicture.public_id);
       const data = await UserService.updateUser(currentUser._id, formData);
-      console.log(data);
-      dispatch(authUpdateSuccess(data));
+      dispatch(authChangeSuccess(data));
     } catch (error) {
-      console.log(error);
-      dispatch(authUpdateFailure());
+      message.error(error.response.data.message);
+      dispatch(authChangeFailure());
     }
   };
 
   const handleUpdateUser = async () => {
-    dispatch(authUpdateStart());
+    dispatch(authChangeStart());
     const userInfo = form.getFieldsValue();
     let updatedInfo;
     if (userInfo.password) {
@@ -46,10 +45,11 @@ const Profile = () => {
     }
     try {
       const data = await UserService.updateUser(currentUser._id, updatedInfo);
-      dispatch(authUpdateSuccess(data));
+      dispatch(authChangeSuccess(data));
       setIsModalOpen(false);
     } catch (error) {
-      dispatch(authUpdateFailure());
+      message.error(error.response.data.message);
+      dispatch(authChangeFailure());
     }
   };
 
@@ -184,7 +184,7 @@ const Profile = () => {
           </Form>
         </Modal>
       </div>
-      <HistoryBox />
+      {currentUser.role === "student" && <HistoryBox />}
     </div>
   );
 };

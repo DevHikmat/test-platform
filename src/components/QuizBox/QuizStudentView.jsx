@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { Button, Divider } from "antd";
+import { Button, Divider, message } from "antd";
 import { LeftOutlined, RightOutlined } from "@ant-design/icons";
 import { QuizService } from "../../services/QuizService";
 import {
-  getOneQuizStart,
+  changeQuizFailure,
+  changeQuizStart,
   getOneQuizSuccess,
   quizFinishSuccess,
 } from "../../redux/quizSlice";
@@ -20,7 +21,6 @@ const QuizStudentView = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [studentAnswers, setStudentAnswers] = useState([]);
   const dispatch = useDispatch();
-  const navigate = useNavigate();
   const { id } = useParams();
 
   const handleNextQuestion = () => {
@@ -33,7 +33,7 @@ const QuizStudentView = () => {
   };
 
   const handleGetOneQuiz = async () => {
-    dispatch(getOneQuizStart());
+    dispatch(changeQuizStart());
     try {
       const data = await QuizService.getOneQuiz(id);
       const quizList = data.quizzes[0];
@@ -41,7 +41,8 @@ const QuizStudentView = () => {
       setCurrentQuiz(quizList);
       setCurrentQuestion(quizList.questions[0]);
     } catch (error) {
-      console.log(error.response.data.message);
+      message.error(error.response.data.message);
+      dispatch(changeQuizFailure());
     }
   };
 

@@ -52,8 +52,10 @@ const QuizResult = () => {
                             {item.queNum + 1}. {item.quizQuestion}
                           </h6>
                           <ul className="mb-3 p-0">
-                            <li className="bg-success text-white">
-                              {item.correctAnswer}
+                            <li className="bg-success text-dark">
+                              <span className="text-white">
+                                {item.correctAnswer}
+                              </span>
                             </li>
                             <li
                               className={

@@ -4,9 +4,9 @@ import { useSelector, useDispatch } from "react-redux";
 import { message } from "antd";
 import { AuthService } from "../../services/AuthService";
 import {
-  authUserStart,
-  authUserSuccess,
-  authUserFailure,
+  authChangeStart,
+  authChangeSuccess,
+  authChangeFailure,
 } from "../../redux/authSlice";
 import "./Signup.scss";
 import { setAxiosInstanceToken } from "../../services/axiosInstance";
@@ -26,16 +26,16 @@ const Signup = () => {
 
   const handleRegister = async (e) => {
     e.preventDefault();
-    dispatch(authUserStart());
+    dispatch(authChangeStart());
     try {
       const data = await AuthService.signup({ ...user, role: "student" });
       localStorage.setItem("id", data.user._id);
       localStorage.setItem("token", data.token);
       setAxiosInstanceToken(data.token);
-      dispatch(authUserSuccess(data.user));
+      dispatch(authChangeSuccess(data.user));
       message.success(`Salom ${data.user.firstname}!`);
     } catch (error) {
-      dispatch(authUserFailure());
+      dispatch(authChangeFailure());
       message.error("Bunday foydalanuvchi allaqachon ro'yxatdan o'tgan!");
     }
   };
@@ -43,7 +43,7 @@ const Signup = () => {
     <div className="signup">
       <div className="signup-content shadow">
         <div className="signup-content-left">
-          <img src="./images/logo/logo1.png" alt="logo" />
+          <img src="/static/logo3.png" alt="logo" />
         </div>
         <div className="signup-content-right">
           <h3>Sign up</h3>

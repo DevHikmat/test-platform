@@ -10,17 +10,17 @@ import {
   Select,
   message,
 } from "antd";
-import QuizAdminItem from "./QuizAdminItem";
 import QuizStudentItem from "./QuizStudentItem";
 import QuizTeacherItem from "./QuizTeacherItem";
 import "./Quiz.scss";
 import { PlusOutlined } from "@ant-design/icons";
 import { QuizService } from "../../services/QuizService";
 import {
-  addQuizStart,
-  addQuizSuccess,
-  addQuizFailure,
+  changeQuizStart,
+  changeQuizSuccess,
+  changeQuizFailure,
 } from "../../redux/quizSlice";
+import QuizAdminBox from "./QuizAdminBox";
 
 const { Option } = Select;
 
@@ -45,21 +45,25 @@ const QuizBox = () => {
       return <QuizStudentItem key={index} quiz={item} />;
     } else if (role === "teacher") {
       return <QuizTeacherItem key={index} quiz={item} />;
-    } else {
-      return <QuizAdminItem key={index} quiz={item} />;
     }
   };
 
   const handleExamAdd = async (values) => {
-    dispatch(addQuizStart());
+    dispatch(changeQuizStart());
     try {
       const data = await QuizService.addQuiz(values);
       message.success(data.message);
-      dispatch(addQuizSuccess());
+      dispatch(changeQuizSuccess());
       setOpen(false);
+      form.setFieldsValue({
+        title: "",
+        categoryId: "",
+        countQuiz: "",
+        quizTime: "",
+      });
     } catch (error) {
       message.warning(error.response.data.message);
-      dispatch(addQuizFailure());
+      dispatch(changeQuizFailure());
     }
   };
 
@@ -67,11 +71,13 @@ const QuizBox = () => {
     <div className="quiz-box" style={{ cursor: "pointer" }}>
       <div className="d-flex justify-content-end">
         {currentUser?.role === "admin" && (
-          <Button
-            icon={<PlusOutlined />}
-            className="quiz-add-btn"
-            onClick={showDrawer}
-          />
+          <>
+            <Button
+              icon={<PlusOutlined />}
+              className="quiz-add-btn"
+              onClick={showDrawer}
+            />
+          </>
         )}
       </div>
       <Drawer
@@ -130,6 +136,7 @@ const QuizBox = () => {
       </Drawer>
 
       <Divider orientation="center">Imtihonlar bo'limi</Divider>
+      {currentUser?.role === "admin" && <QuizAdminBox />}
       <Row gutter={24}>
         {currentUser &&
           quizList?.map((item, index) => {

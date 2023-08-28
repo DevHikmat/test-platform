@@ -3,20 +3,22 @@ import { Button, Card, Col, Popconfirm, message } from "antd";
 import { useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
 import {
-  deleteCategoryStart,
-  deleteCategorySuccess,
+  changeCategoryFailure,
+  changeCategoryStart,
+  changeCategorySuccess,
 } from "../../redux/categorySlice";
 import { CategoryService } from "../../services/CategoryService";
 const CategoryItem = ({ cat, handleEditCategory }) => {
   const dispatch = useDispatch();
 
   const handleDeleteCategory = async (id) => {
-    dispatch(deleteCategoryStart());
+    dispatch(changeCategoryStart());
     try {
       const data = await CategoryService.deleteCategory(id);
       message.success(data);
-      dispatch(deleteCategorySuccess());
+      dispatch(changeCategorySuccess());
     } catch (error) {
+      dispatch(changeCategoryFailure());
       message.error(error.response.data.message);
     }
   };

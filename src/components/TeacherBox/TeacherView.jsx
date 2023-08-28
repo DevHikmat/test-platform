@@ -3,14 +3,10 @@ import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import moment from "moment/moment";
 import {
-  deleteUserStart,
+  changeUserFailure,
+  changeUserStart,
+  changeUserSuccess,
   getAllUsersSuccess,
-  getOneUserFailure,
-  getOneUserStart,
-  getOneUserSuccess,
-  getTeacherGroupFailure,
-  getTeacherGroupStart,
-  getTeacherGroupSuccess,
 } from "../../redux/userSlice";
 import { UserService } from "../../services/UserService";
 import { GroupService } from "../../services/GroupService";
@@ -25,30 +21,31 @@ const TeacherView = () => {
   const { id } = useParams();
 
   const handleGetTeacher = async () => {
-    dispatch(getOneUserStart());
+    dispatch(changeUserStart());
     try {
       const data = await UserService.getOneUser(id);
       setTeacher(data);
-      dispatch(getOneUserSuccess());
+      dispatch(changeUserSuccess());
     } catch (error) {
-      dispatch(getOneUserFailure());
+      message.error(error.response.data.message);
+      dispatch(changeUserFailure());
     }
   };
 
   const handleTeacherGroups = async () => {
-    dispatch(getTeacherGroupStart());
+    dispatch(changeUserStart());
     try {
       const data = await GroupService.getTeacherGroups(id);
       setGroups(data.groups);
-      dispatch(getTeacherGroupSuccess());
+      dispatch(changeUserSuccess());
     } catch (error) {
-      console.log(error);
-      dispatch(getTeacherGroupFailure());
+      message.error(error.response.data.message);
+      dispatch(changeUserFailure());
     }
   };
 
   const handleDeleteTeacher = async () => {
-    dispatch(deleteUserStart());
+    dispatch(changeUserStart());
     try {
       await UserService.deleteUser(teacher._id);
       const data = await UserService.getAllUsers();
@@ -56,7 +53,8 @@ const TeacherView = () => {
       message.success("Ustoz o'chirildi!");
       navigate("/admin/teachers/");
     } catch (error) {
-      console.log(error);
+      dispatch(changeUserFailure());
+      message.error(error.response.data.message);
     }
   };
 

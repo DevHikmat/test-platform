@@ -1,18 +1,13 @@
-import {
-  Button,
-  Divider,
-  Drawer,
-  Form,
-  Input,
-  Modal,
-  Row,
-  message,
-} from "antd";
+import { Button, Divider, Drawer, Form, Input, Row, message } from "antd";
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { AuthService } from "../../services/AuthService";
 import { UserService } from "../../services/UserService";
-import { getAllUsersStart, getAllUsersSuccess } from "../../redux/userSlice";
+import {
+  changeUserFailure,
+  changeUserStart,
+  getAllUsersSuccess,
+} from "../../redux/userSlice";
 import TeacherItem from "./TeacherItem";
 import "./TeacherBox.scss";
 import { PlusOutlined } from "@ant-design/icons";
@@ -24,15 +19,16 @@ const TeacherBox = () => {
   const [form] = Form.useForm();
 
   const handleAddTeacher = async (values) => {
+    dispatch(changeUserStart());
     try {
       await AuthService.signup({ ...values, role: "teacher" });
-      dispatch(getAllUsersStart());
       const users = await UserService.getAllUsers();
       dispatch(getAllUsersSuccess(users));
       setOpen(false);
       message.success("Ustoz qo'shildi");
     } catch (error) {
       message.error(error.response.data.message);
+      dispatch(changeUserFailure());
     }
   };
 

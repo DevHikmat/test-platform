@@ -13,8 +13,12 @@ export const QuizService = {
     const res = await axiosInstance.post("/quiz", quiz);
     return res.data;
   },
+  async updateQuiz(id, quiz) {
+    const res = await axiosInstance.put(`/quiz/${id}`, quiz);
+    return res.data;
+  },
   async deleteQuiz(id) {
     const res = await axiosInstance.delete(`/quiz/${id}`);
-    console.log(res);
+    return res.data;
   },
 };

@@ -4,9 +4,9 @@ import { useDispatch, useSelector } from "react-redux";
 import { message } from "antd";
 import { AuthService } from "../../services/AuthService";
 import {
-  authUserStart,
-  authUserSuccess,
-  authUserFailure,
+  authChangeStart,
+  authChangeSuccess,
+  authChangeFailure,
 } from "../../redux/authSlice";
 import "./Login.scss";
 import { setAxiosInstanceToken } from "../../services/axiosInstance";
@@ -19,7 +19,7 @@ const Login = () => {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    dispatch(authUserStart());
+    dispatch(authChangeStart());
     try {
       const data = await AuthService.login({
         email: email_rf.current.value,
@@ -28,10 +28,10 @@ const Login = () => {
       localStorage.setItem("id", data.user._id);
       localStorage.setItem("token", data.token);
       setAxiosInstanceToken(data.token);
-      dispatch(authUserSuccess(data.user));
+      dispatch(authChangeSuccess(data.user));
       message.success(`Salom ${data.user.firstname}!`);
     } catch (error) {
-      dispatch(authUserFailure());
+      dispatch(authChangeFailure());
       message.error("Bu foydalanuvchi topilmadi!");
     }
   };
@@ -39,7 +39,7 @@ const Login = () => {
     <div className="login">
       <div className="login-content shadow">
         <div className="login-content-left">
-          <img src="./images/logo/logo1.png" alt="logo" />
+          <img src="/static/logo3.png" alt="logo" />
         </div>
         <div className="login-content-right">
           <h3>Login</h3>
