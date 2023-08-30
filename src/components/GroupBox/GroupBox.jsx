@@ -181,7 +181,7 @@ const GroupsBox = () => {
       title: "Actions",
       render: (group) => {
         return (
-          <div className="d-flex">
+          <div className="d-flex gap-2">
             {group._id === editingRow ? (
               <Button icon={<CheckOutlined />} onClick={saveChanges}></Button>
             ) : (
@@ -197,11 +197,7 @@ const GroupsBox = () => {
               okType="danger"
               onConfirm={() => handleDeleteGroup(group._id)}
             >
-              <Button
-                danger
-                className="ms-2"
-                icon={<DeleteOutlined />}
-              ></Button>
+              <Button danger icon={<DeleteOutlined />}></Button>
             </Popconfirm>
           </div>
         );
@@ -300,7 +296,7 @@ const GroupsBox = () => {
           <Form form={form}>
             <Table
               size="small"
-              pagination={{ defaultPageSize: 5 }}
+              pagination={{ defaultPageSize: 10 }}
               columns={groupColumns}
               dataSource={dataSource}
             ></Table>

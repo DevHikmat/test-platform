@@ -6,6 +6,7 @@ import {
   Drawer,
   Form,
   Input,
+  Modal,
   Row,
   Select,
   message,
@@ -13,14 +14,16 @@ import {
 import QuizStudentItem from "./QuizStudentItem";
 import QuizTeacherItem from "./QuizTeacherItem";
 import "./Quiz.scss";
-import { PlusOutlined } from "@ant-design/icons";
+import { PlusOutlined, WarningOutlined } from "@ant-design/icons";
 import { QuizService } from "../../services/QuizService";
 import {
   changeQuizStart,
   changeQuizSuccess,
   changeQuizFailure,
+  quizExamStart,
 } from "../../redux/quizSlice";
 import QuizAdminBox from "./QuizAdminBox";
+import { useNavigate } from "react-router-dom";
 
 const { Option } = Select;
 
@@ -29,9 +32,18 @@ const QuizBox = () => {
   const { category, quiz, auth } = useSelector((state) => state);
   const { quizList, isLoading } = quiz;
   const { currentUser } = auth;
-  const dispatch = useDispatch();
-
   const [open, setOpen] = useState(false);
+  const [isOpenModal, setIsOpenModal] = useState(false);
+  const [quizId, setQuizId] = useState(null);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const handleModalOk = () => {
+    dispatch(quizExamStart());
+    setIsOpenModal(false);
+    navigate(`quiz/${quizId}`);
+    message.info("Imtihon boshlandi. Omad!");
+  };
   const showDrawer = () => {
     setOpen(true);
   };
@@ -39,10 +51,19 @@ const QuizBox = () => {
     setOpen(false);
   };
 
+  const modalHandler = (id) => {
+    if (currentUser.accessExam) {
+      setIsOpenModal(true);
+      setQuizId(id);
+    } else message.warning("Imtihonga ruxsat berilmagan.");
+  };
+
   const quizItemHandler = (item, index) => {
     const { role } = currentUser;
     if (role === "student") {
-      return <QuizStudentItem key={index} quiz={item} />;
+      return (
+        <QuizStudentItem modalHandler={modalHandler} key={index} quiz={item} />
+      );
     } else if (role === "teacher") {
       return <QuizTeacherItem key={index} quiz={item} />;
     }
@@ -143,6 +164,38 @@ const QuizBox = () => {
             return quizItemHandler(item, index);
           })}
       </Row>
+
+      <Modal
+        okText="Roziman"
+        cancelText="Bekor qilish"
+        onCancel={() => {
+          setIsOpenModal(false);
+          message.warning("Imtihon bekor qilindi.");
+        }}
+        onOk={() => handleModalOk()}
+        open={isOpenModal}
+        title={
+          <div className="text-warning d-flex align-items-center gap-2">
+            <WarningOutlined />
+            <span>Eslatma! Imtihon paytida...</span>
+          </div>
+        }
+      >
+        <Divider></Divider>
+        <ol className="list-group ps-3">
+          <li>Boshqa bo'limlarga o'ta olmaysiz;</li>
+          <li>
+            Sahifani yangilash mumkin emas; Sababi, Imtihon boshidan boshlanadi
+            va har gal turlicha savollar tushadi.
+          </li>
+          <li>Chiqib ketmang!</li>
+          <Divider className="my-3"></Divider>
+          <li>
+            Agar vaqt tugab qolsa avtomatik tarzda belgilagan javoblaringiz
+            tekshiriladi. Belgilamagan savollar hisobga olinmaydi!
+          </li>
+        </ol>
+      </Modal>
     </div>
   );
 };
