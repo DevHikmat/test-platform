@@ -22,8 +22,11 @@ import { setAxiosInstanceToken } from "./services/axiosInstance";
 import { message } from "antd";
 
 function App() {
-  const { isLogin } = useSelector((state) => state.auth);
-  const { isChange } = useSelector((state) => state.groups);
+  const { auth, groups, quiz } = useSelector((state) => state);
+  const { isLogin } = auth;
+  const { isChange } = groups;
+  const { isFinished } = quiz;
+
   const location = useLocation();
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -71,7 +74,7 @@ function App() {
     const token = localStorage.getItem("token");
     if (token) getCurrentUser(token);
     else navigate("/login");
-  }, [isLogin]);
+  }, [isLogin, isFinished]);
 
   useEffect(() => {
     handleGroups();

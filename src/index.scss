@@ -22,7 +22,8 @@ a {
 // Main
 .ant-layout {
   aside {
-    height: 100vh;
+    min-height: 100vh;
+    height: 100%;
     position: sticky !important;
     top: 0 !important;
     .demo-logo-vertical {
@@ -47,6 +48,13 @@ a {
         }
         a {
           text-decoration: none;
+        }
+      }
+      .logout-box {
+        color: red;
+        background-color: transparent;
+        &:hover {
+          color: red;
         }
       }
     }

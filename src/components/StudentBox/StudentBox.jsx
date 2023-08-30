@@ -54,34 +54,24 @@ const StudentBox = () => {
     form.setFieldsValue({
       firstname: user.firstname,
       lastname: user.lastname,
-      group: group._id,
+      group: group?._id,
     });
   };
 
-  const saveModalInfo = async () => {
+  const saveModalInfo = async (values) => {
     let formData = new FormData();
-    let values = form.getFieldsValue();
-    let failure = false;
-    for (let item in values) {
-      if (values[item] === "") {
-        failure = true;
-        break;
-      }
-    }
-    if (failure) return message.warning("Iltimos maydonni bo'sh qoldirmang.");
     for (let item in values) {
       if (values[item]) {
         formData.append(`${item}`, values[item]);
       }
     }
-    if (avatar_rf.current.files)
+    if (avatar_rf.current.files[0])
       formData.append("profilePicture", avatar_rf.current.files[0]);
     dispatch(changeUserStart());
     try {
-      const data = await UserService.updateUser(tempId, formData);
-      console.log(data);
+      await UserService.updateUser(tempId, formData);
       dispatch(changeUserSuccess());
-      message.success("Student ma'lumotlari yangilandi.");
+      message.success("Student ma'lumoti yangilandi.");
       closeModal();
     } catch (error) {
       message.error(error.response.data.message);
@@ -132,13 +122,11 @@ const StudentBox = () => {
       )
     );
   };
-
   const groupFiller = (user) => {
     const group = groups?.find((item) => item._id === user.group);
     if (group) return group.name;
     else return "Noaniq";
   };
-
   const columns = [
     { key: "1", title: "#", dataIndex: "key", width: 50, fixed: "left" },
     {
@@ -248,6 +236,7 @@ const StudentBox = () => {
           encType="multipart/form-data"
           labelCol={{ span: 5 }}
           layout="vertical"
+          onFinish={saveModalInfo}
         >
           <Form.Item
             className="mb-2"
@@ -275,7 +264,17 @@ const StudentBox = () => {
           >
             <Input />
           </Form.Item>
-          <Form.Item className="mb-2" label="Guruh" name="group">
+          <Form.Item
+            className="mb-2"
+            label="Guruh"
+            name="group"
+            rules={[
+              {
+                required: true,
+                message: "Guruhni kiriting",
+              },
+            ]}
+          >
             <Select>
               {groups?.map((group, index) => {
                 return (
@@ -297,7 +296,7 @@ const StudentBox = () => {
           />
 
           <Form.Item>
-            <Button disabled={isLoading} onClick={saveModalInfo} type="primary">
+            <Button htmlType="submit" disabled={isLoading} type="primary">
               O'zgarishlarni saqlash
             </Button>
           </Form.Item>

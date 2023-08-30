@@ -217,11 +217,8 @@ const Admin = () => {
               {
                 key: "6",
                 icon: <i className="fa-solid fa-arrow-right-from-bracket"></i>,
-                label: (
-                  <div onClick={handleLogout} className="logout-box">
-                    Profildan chiqish
-                  </div>
-                ),
+                onClick: handleLogout,
+                label: <div className="logout-box">Profildan chiqish</div>,
               },
             ]}
           />

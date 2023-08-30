@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { Button, Divider, message } from "antd";
 import { LeftOutlined, RightOutlined } from "@ant-design/icons";
@@ -8,6 +8,7 @@ import {
   changeQuizFailure,
   changeQuizStart,
   getOneQuizSuccess,
+  quizExamStart,
   quizFinishSuccess,
 } from "../../redux/quizSlice";
 import "./Quiz.scss";
@@ -15,13 +16,16 @@ import QuizTimer from "./QuizTimer";
 import QuizQuestion from "./QuizQuestion";
 
 const QuizStudentView = () => {
-  const { isFinished } = useSelector((state) => state.quiz);
+  const { quiz, auth } = useSelector((state) => state);
+  const { currentUser } = auth;
+  const { isFinished } = quiz;
   const [currentQuiz, setCurrentQuiz] = useState(null);
   const [currentQuestion, setCurrentQuestion] = useState(null);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [studentAnswers, setStudentAnswers] = useState([]);
   const dispatch = useDispatch();
   const { id } = useParams();
+  const navigate = useNavigate();
 
   const handleNextQuestion = () => {
     setCurrentQuestion(currentQuiz.questions[currentIndex + 1]);
@@ -59,13 +63,14 @@ const QuizStudentView = () => {
   };
 
   const handleBeforeUnload = (event) => {
-    event.preventDefault();
     return (event.returnValue = "Are you sure you want to leave?");
   };
   useEffect(() => {
+    if (!currentUser.accessExam) return navigate("/student");
     handleGetOneQuiz();
-    document.addEventListener("contextmenu", handleContextMenu);
+    dispatch(quizExamStart());
     window.history.pushState(null, document.title, window.location.href);
+    document.addEventListener("contextmenu", handleContextMenu);
     window.addEventListener("popstate", handlePopstate);
     window.addEventListener("beforeunload", handleBeforeUnload);
     return () => {

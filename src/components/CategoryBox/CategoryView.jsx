@@ -140,13 +140,15 @@ const CategoryView = () => {
   return (
     <div className="category-view">
       <div className="row row-cols-sm-1 row-cols-md-1 row-cols-lg-1">
-        <Button
-          icon={<PlusOutlined />}
-          type="primary"
-          className="que-add-btn"
-          ghost={true}
-          onClick={showDrawer}
-        ></Button>
+        <div className="d-flex justify-content-end">
+          <Button
+            icon={<PlusOutlined />}
+            type="primary"
+            className="que-add-btn"
+            ghost={true}
+            onClick={showDrawer}
+          ></Button>
+        </div>
         <Drawer
           width={600}
           title="Savol qo'shish"

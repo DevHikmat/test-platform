@@ -22,29 +22,13 @@ const QuizTimer = ({ studentAnswers }) => {
   };
   const [remainingTime, setRemainingTime] = useState(targetTime);
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      handleScore();
-    }, targetTime.minutes * 60000);
-    return () => {
-      clearTimeout(timer);
-    };
-  }, [currentQuiz]);
-
-  useEffect(() => {
-    const interval = setInterval(() => countDown(interval), 1000);
-    return () => {
-      clearInterval(interval);
-    };
-  }, [remainingTime, isFinished]);
-
   const countDown = (interval) => {
     if (
       (remainingTime.minutes === 0 && remainingTime.seconds === 0) ||
       isFinished
     ) {
-      clearInterval(interval);
       handleScore();
+      clearInterval(interval);
     } else {
       setRemainingTime((prevTime) => {
         let minutes =
@@ -102,6 +86,7 @@ const QuizTimer = ({ studentAnswers }) => {
         };
         currentUser = {
           ...currentUser,
+          accessExam: false,
           history: [...currentUser.history, examResult],
         };
         const id = localStorage.getItem("id");
@@ -114,6 +99,22 @@ const QuizTimer = ({ studentAnswers }) => {
     };
     handleAddHistory();
   };
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      handleScore();
+    }, targetTime.minutes * 60000);
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [currentQuiz]);
+
+  useEffect(() => {
+    const interval = setInterval(() => countDown(interval), 1000);
+    return () => {
+      clearInterval(interval);
+    };
+  }, [remainingTime]);
 
   return (
     <div
