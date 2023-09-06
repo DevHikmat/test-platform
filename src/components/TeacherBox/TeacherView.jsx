@@ -6,15 +6,14 @@ import {
   changeUserFailure,
   changeUserStart,
   changeUserSuccess,
-  getAllUsersSuccess,
 } from "../../redux/userSlice";
 import { UserService } from "../../services/UserService";
 import { GroupService } from "../../services/GroupService";
 import { Col, Divider, Popconfirm, Row, Skeleton, message } from "antd";
 
 const TeacherView = () => {
-  const navigate = useNavigate();
   const { isLoading } = useSelector((state) => state.users);
+  const navigate = useNavigate();
   const [teacher, setTeacher] = useState(null);
   const [groups, setGroups] = useState(null);
   const dispatch = useDispatch();
@@ -49,7 +48,7 @@ const TeacherView = () => {
     try {
       await UserService.deleteUser(teacher._id);
       const data = await UserService.getAllUsers();
-      dispatch(getAllUsersSuccess(data));
+      dispatch(changeUserSuccess(data));
       message.success("Ustoz o'chirildi!");
       navigate("/admin/teachers/");
     } catch (error) {

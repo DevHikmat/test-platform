@@ -25,16 +25,26 @@ import {
   changeGroupSuccess,
 } from "../../redux/groupSlice";
 import "./GroupBox.scss";
+import { UserService } from "../../services/UserService";
 const { Option } = Select;
 
 const GroupsBox = () => {
   const dispatch = useDispatch();
-  const { groups } = useSelector((state) => state.groups);
-  const { teacherList } = useSelector((state) => state.users);
-  const [form] = Form.useForm();
-  const [open, setOpen] = useState(false);
+  const { groups } = useSelector((state) => state);
   const [dataSource, setDataSource] = useState(null);
   const [editingRow, setEditingRow] = useState(null);
+  const [teacherList, setTeacherList] = useState([]);
+  const [form] = Form.useForm();
+  const [open, setOpen] = useState(false);
+
+  const handleAllUsers = async () => {
+    try {
+      let data = await UserService.getAllUsers();
+      setTeacherList(data.filter((user) => user.role === "teacher"));
+    } catch (error) {
+      message.error(error.response.data.message);
+    }
+  };
 
   const handleOk = async () => {
     let group = form.getFieldsValue();
@@ -68,13 +78,17 @@ const GroupsBox = () => {
   };
 
   useEffect(() => {
+    handleAllUsers();
+  }, []);
+
+  useEffect(() => {
     setDataSource(
-      groups?.map((item, index) => ({
+      groups.groups?.map((item, index) => ({
         ...item,
         key: index + 1,
       }))
     );
-  }, [groups]);
+  }, [groups.groups]);
 
   const openInputs = (group) => {
     setEditingRow(group._id);
@@ -114,15 +128,6 @@ const GroupsBox = () => {
     }
   };
 
-  const teacherFiller = (id) => {
-    const teacher = teacherList?.find((item) => item._id === id);
-    if (teacher) {
-      return teacher.firstname;
-    } else {
-      return "Noaniq";
-    }
-  };
-
   const groupColumns = [
     { key: "1", title: "#", render: (group) => <>{group.key}</> },
     {
@@ -142,7 +147,8 @@ const GroupsBox = () => {
       key: "10",
       title: "Ustoz",
       render: (group) => {
-        return teacherFiller(group.teacherId);
+        console.log(group, teacherList);
+        return teacherList.find((teach) => teach._id === group._id)?.firstname;
       },
     },
     {
@@ -183,7 +189,11 @@ const GroupsBox = () => {
         return (
           <div className="d-flex gap-2">
             {group._id === editingRow ? (
-              <Button icon={<CheckOutlined />} onClick={saveChanges}></Button>
+              <Button
+                loading={groups.isLoading}
+                icon={<CheckOutlined />}
+                onClick={saveChanges}
+              ></Button>
             ) : (
               <Button
                 icon={<EditOutlined />}
@@ -245,7 +255,7 @@ const GroupsBox = () => {
                 ]}
               >
                 <Select placeholder="Tanlash">
-                  {teacherList?.map((teach, index) => {
+                  {teacherList.map((teach, index) => {
                     return (
                       <Option key={index} value={teach._id}>
                         {teach.firstname} {teach.lastname}

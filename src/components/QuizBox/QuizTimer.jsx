@@ -93,7 +93,6 @@ const QuizTimer = ({ studentAnswers }) => {
         const updatedUser = await UserService.updateUser(id, currentUser);
         dispatch(authChangeSuccess(updatedUser));
       } catch (error) {
-        console.error("Error fetching global time:", error);
         dispatch(authChangeFailure());
       }
     };

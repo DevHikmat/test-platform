@@ -5,13 +5,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Routes, Route } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { QuizService } from "../../services/QuizService";
-import { UserService } from "../../services/UserService";
 import { CategoryService } from "../../services/CategoryService";
-import {
-  changeUserFailure,
-  changeUserStart,
-  getAllUsersSuccess,
-} from "../../redux/userSlice";
 import CategoryBox from "../../components/CategoryBox/CategoryBox";
 import QuizBox from "../../components/QuizBox/QuizBox";
 import GroupsBox from "../../components/GroupBox/GroupBox";
@@ -37,29 +31,15 @@ import TeacherGrStudents from "../../components/TeacherBox/TeacherGrStudents";
 const { Header, Sider, Content } = Layout;
 
 const Admin = () => {
-  const navigate = useNavigate();
-  const location = useLocation();
-  const { currentUser } = useSelector((state) => state.auth);
-  const { isChange } = useSelector((state) => state.users);
-  const quizList = useSelector((state) => state.quiz);
-  const { category } = useSelector((state) => state);
-  const dispatch = useDispatch();
+  const { auth, quiz, category } = useSelector((state) => state);
+  const { currentUser } = auth;
   const [collapsed, setCollapsed] = useState(false);
+  const dispatch = useDispatch();
+  const location = useLocation();
+  const navigate = useNavigate();
   const {
     token: { colorBgContainer },
   } = theme.useToken();
-
-  const handleAllUsers = async () => {
-    dispatch(changeUserStart());
-    try {
-      let data = await UserService.getAllUsers();
-      data = data.filter((user) => user.role !== "admin");
-      dispatch(getAllUsersSuccess(data));
-    } catch (error) {
-      message.error(error.response.data.message);
-      dispatch(changeUserFailure());
-    }
-  };
 
   const handleAllQuiz = async () => {
     dispatch(changeQuizStart());
@@ -99,11 +79,7 @@ const Admin = () => {
 
   useEffect(() => {
     handleAllQuiz();
-  }, [quizList.isChange]);
-
-  useEffect(() => {
-    handleAllUsers();
-  }, [isChange]);
+  }, [quiz.isChange]);
 
   const toggleSiderMenu = () => {
     window.innerWidth <= 576 && setCollapsed(true);

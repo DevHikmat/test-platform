@@ -12,6 +12,7 @@ import {
   Avatar,
   Divider,
   message,
+  Skeleton,
 } from "antd";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -26,17 +27,19 @@ import {
   changeUserFailure,
   changeUserStart,
   changeUserSuccess,
+  getAllUsersSuccess,
 } from "../../redux/userSlice";
 import "./StudentBox.scss";
 
 const StudentBox = () => {
-  const [form] = Form.useForm();
-  const dispatch = useDispatch();
-  const [dataSource, setDataSource] = useState(null);
-  const { studentList, isLoading } = useSelector((state) => state.users);
-  const { groups } = useSelector((state) => state.groups);
+  const { users, groups } = useSelector((state) => state);
+
+  const [dataSource, setDataSource] = useState([]);
+  const [students, setStudents] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [tempId, setTempId] = useState(null);
+  const [form] = Form.useForm();
+  const dispatch = useDispatch();
   const avatar_rf = useRef();
 
   const showModal = () => {
@@ -46,11 +49,27 @@ const StudentBox = () => {
     setIsModalOpen(false);
   };
 
+  const handleAllUsers = async () => {
+    dispatch(changeUserStart());
+    try {
+      let data = await UserService.getAllUsers();
+      data = data
+        .filter((user) => user.role === "student")
+        .map((user, index) => ({ ...user, key: index + 1 }));
+      setDataSource(data);
+      setStudents(data);
+      dispatch(getAllUsersSuccess());
+    } catch (error) {
+      message.error(error.response.data.message);
+      dispatch(changeUserSuccess());
+    }
+  };
+
   const handleFillModal = (id) => {
     showModal();
     setTempId(id);
-    const user = studentList.find((item) => item._id === id);
-    const group = groups.find((group) => group._id === user.group);
+    const user = dataSource.find((item) => item._id === id);
+    const group = groups.groups?.find((group) => group._id === user.group);
     form.setFieldsValue({
       firstname: user.firstname,
       lastname: user.lastname,
@@ -105,28 +124,29 @@ const StudentBox = () => {
   };
 
   useEffect(() => {
-    setDataSource(studentList);
-  }, [studentList]);
+    handleAllUsers();
+  }, [users.isChange]);
 
   const searchByName = (value) => {
-    setDataSource(
-      studentList.filter((user) =>
+    setStudents(
+      dataSource.filter((user) =>
         user.firstname.toLowerCase().includes(value.toLowerCase())
       )
     );
   };
   const searchBySurname = (value) => {
-    setDataSource(
-      studentList.filter((user) =>
+    setStudents(
+      dataSource.filter((user) =>
         user.lastname.toLowerCase().includes(value.toLowerCase())
       )
     );
   };
   const groupFiller = (user) => {
-    const group = groups?.find((item) => item._id === user.group);
+    const group = groups.groups?.find((item) => item._id === user.group);
     if (group) return group.name;
     else return "Noaniq";
   };
+
   const columns = [
     { key: "1", title: "#", dataIndex: "key", width: 50, fixed: "left" },
     {
@@ -218,12 +238,18 @@ const StudentBox = () => {
           />
         </div>
       </div>
-      <Table
-        columns={columns}
-        dataSource={dataSource}
-        size="small"
-        scroll={{ x: 1000 }}
-      />
+
+      {users.isLoading ? (
+        <Skeleton active />
+      ) : (
+        <Table
+          columns={columns}
+          dataSource={students}
+          size="small"
+          scroll={{ x: 1000 }}
+          pagination={{}}
+        />
+      )}
       <Modal
         width={350}
         footer={false}
@@ -276,7 +302,7 @@ const StudentBox = () => {
             ]}
           >
             <Select>
-              {groups?.map((group, index) => {
+              {groups.groups?.map((group, index) => {
                 return (
                   <Select.Option value={group._id} key={index}>
                     {group.name}
@@ -296,7 +322,7 @@ const StudentBox = () => {
           />
 
           <Form.Item>
-            <Button htmlType="submit" disabled={isLoading} type="primary">
+            <Button htmlType="submit" loading={users.isLoading} type="primary">
               O'zgarishlarni saqlash
             </Button>
           </Form.Item>

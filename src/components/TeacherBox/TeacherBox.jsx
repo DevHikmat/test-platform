@@ -1,11 +1,22 @@
-import { Button, Divider, Drawer, Form, Input, Row, message } from "antd";
-import React, { useState } from "react";
+import {
+  Button,
+  Col,
+  Divider,
+  Drawer,
+  Form,
+  Input,
+  Row,
+  Skeleton,
+  message,
+} from "antd";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { AuthService } from "../../services/AuthService";
 import { UserService } from "../../services/UserService";
 import {
-  changeUserFailure,
   changeUserStart,
+  changeUserSuccess,
+  changeUserFailure,
   getAllUsersSuccess,
 } from "../../redux/userSlice";
 import TeacherItem from "./TeacherItem";
@@ -13,17 +24,30 @@ import "./TeacherBox.scss";
 import { PlusOutlined } from "@ant-design/icons";
 
 const TeacherBox = () => {
+  const { isLoading, isChange } = useSelector((state) => state.users);
   const dispatch = useDispatch();
-  const { teacherList } = useSelector((state) => state.users);
+  const [dataSource, setDataSource] = useState([]);
   const [open, setOpen] = useState(false);
   const [form] = Form.useForm();
+
+  const handleAllUsers = async () => {
+    dispatch(changeUserStart());
+    try {
+      let data = await UserService.getAllUsers();
+      setDataSource(data.filter((user) => user.role === "teacher"));
+      dispatch(getAllUsersSuccess());
+    } catch (error) {
+      message.error(error.response.data.message);
+      dispatch(changeUserFailure());
+    }
+  };
 
   const handleAddTeacher = async (values) => {
     dispatch(changeUserStart());
     try {
       await AuthService.signup({ ...values, role: "teacher" });
       const users = await UserService.getAllUsers();
-      dispatch(getAllUsersSuccess(users));
+      dispatch(changeUserSuccess(users));
       setOpen(false);
       message.success("Ustoz qo'shildi");
     } catch (error) {
@@ -31,6 +55,9 @@ const TeacherBox = () => {
       dispatch(changeUserFailure());
     }
   };
+  useEffect(() => {
+    handleAllUsers();
+  }, [isChange]);
 
   return (
     <div className="teacher-box">
@@ -116,15 +143,34 @@ const TeacherBox = () => {
             <Input.Password placeholder="parol" />
           </Form.Item>
           <Form.Item>
-            <Button htmlType="submit">Yaratish</Button>
+            <Button loading={isLoading} htmlType="submit">
+              Yaratish
+            </Button>
           </Form.Item>
         </Form>
       </Drawer>
       <Divider>Barcha ustozlar</Divider>
       <Row gutter={24}>
-        {teacherList?.map((teach, index) => {
-          return <TeacherItem key={index} teach={teach} />;
-        })}
+        {isLoading ? (
+          <>
+            <Col span={6}>
+              <Skeleton block={false} active />
+            </Col>
+            <Col span={6}>
+              <Skeleton block={false} active />
+            </Col>
+            <Col span={6}>
+              <Skeleton block={false} active />
+            </Col>
+            <Col span={6}>
+              <Skeleton block={false} active />
+            </Col>
+          </>
+        ) : (
+          dataSource?.map((teach, index) => {
+            return <TeacherItem key={index} teach={teach} />;
+          })
+        )}
       </Row>
     </div>
   );
