@@ -101,7 +101,7 @@ const QuizTimer = ({ studentAnswers }) => {
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      handleScore();
+      if (!isFinished) handleScore();
     }, targetTime.minutes * 60000);
     return () => {
       clearTimeout(timer);
