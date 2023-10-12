@@ -27,6 +27,7 @@ const CategoryView = () => {
   const { isChange, isLoading } = useSelector((state) => state.question);
   const [form] = Form.useForm();
   const dispatch = useDispatch();
+  const [queUrl, setQueUrl] = useState(null);
 
   const [open, setOpen] = useState(false);
   const showDrawer = () => {
@@ -40,7 +41,7 @@ const CategoryView = () => {
     try {
       const data = await QuestionService.getAllQuestions();
       setQuestionList(
-        data.question
+        data?.question
           .filter((que) => que.category === id)
           .map((item, index) => ({ ...item, key: index + 1 }))
       );
@@ -62,6 +63,7 @@ const CategoryView = () => {
     dispatch(changeQueStart());
     try {
       let formData = new FormData();
+      queUrl && formData.append("questionImage", queUrl);
       formData.append("quizQuestion", quizQuestion);
       formData.append("correctAnswer", correctAnswer);
       formData.append("choice1", choice1);
@@ -71,6 +73,7 @@ const CategoryView = () => {
       const data = await QuestionService.addQuestion(formData);
       dispatch(changeQueSuccess());
       message.success(data.message);
+      setQueUrl(null);
       form.setFieldsValue({
         quizQuestion: "",
         correctAnswer: "",
@@ -163,6 +166,26 @@ const CategoryView = () => {
               labelAlign="left"
               onFinish={handleAddQuestion}
             >
+              <Form.Item>
+                <div className="question-img">
+                  <label htmlFor="queImg">
+                    {queUrl ? (
+                      <img
+                        src={URL.createObjectURL(queUrl)}
+                        alt="savol rasmi"
+                      />
+                    ) : (
+                      <i className="fa-regular fa-image"></i>
+                    )}
+                  </label>
+                  <input
+                    id="queImg"
+                    type="file"
+                    accept="image/jpeg, image/png"
+                    onChange={(e) => setQueUrl(e.target.files[0])}
+                  />
+                </div>
+              </Form.Item>
               <Form.Item label="Savol:" name="quizQuestion">
                 <TextArea rows={3} />
               </Form.Item>
@@ -187,6 +210,8 @@ const CategoryView = () => {
                   className="my-3 d-flex align-items-center"
                   htmlType="submit"
                   icon={<PlusOutlined />}
+                  disabled={isLoading}
+                  loading={isLoading}
                 >
                   Savolni saqlash
                 </Button>

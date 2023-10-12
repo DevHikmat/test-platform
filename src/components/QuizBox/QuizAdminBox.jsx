@@ -19,7 +19,7 @@ import {
 import { QuizService } from "../../services/QuizService";
 import { Link } from "react-router-dom";
 
-const QuizAdminBox = () => {
+const QuizAdminBox = ({ boxtype }) => {
   const { quiz, category } = useSelector((state) => state);
   const { quizList, isLoading } = quiz;
   const [dataSource, setDataSource] = useState([]);
@@ -66,12 +66,12 @@ const QuizAdminBox = () => {
 
   const columns = [
     { key: "1", title: "T/R", dataIndex: "key" },
-    { key: "1", title: "Imtihon nomi", dataIndex: "title" },
-    { key: "1", title: "Kategoriyasi", dataIndex: "catName" },
-    { key: "1", title: "Savollar soni", dataIndex: "countQuiz" },
-    { key: "1", title: "Berilgan vaqt", dataIndex: "quizTime" },
+    { key: "2", title: "Nomi", dataIndex: "title" },
+    { key: "3", title: "Kategoriyasi", dataIndex: "catName" },
+    { key: "4", title: "Savollar soni", dataIndex: "countQuiz" },
+    { key: "5", title: "Berilgan vaqt", dataIndex: "quizTime" },
     {
-      key: "1",
+      key: "6",
       title: "Funksiyalar",
       render: (quiz) => {
         return (
@@ -98,28 +98,39 @@ const QuizAdminBox = () => {
     },
   ];
   useEffect(() => {
-    setDataSource(
-      quizList?.map((item, index) => {
-        let currentCat = category.category?.find(
-          (cat) => cat._id === item.categoryId
-        );
-        return { ...item, key: index + 1, catName: currentCat?.name };
-      })
+    setDataSource(() =>
+      quizList
+        ?.filter((quiz) => {
+          let quizCat = category.category?.find(
+            (cat) => cat._id === quiz.categoryId
+          );
+          if (quizCat?.type === boxtype) return quiz;
+        })
+        .map((item, index) => {
+          let quizCat = category.category?.find(
+            (cat) => cat._id === item.categoryId
+          );
+          return { ...item, key: index + 1, catName: quizCat?.name };
+        })
     );
-  }, [quizList, category]);
+  }, [category.category, quizList, boxtype]);
   return (
     <div>
       {quizList ? (
         quizList.length > 0 ? (
           <Table columns={columns} dataSource={dataSource} />
         ) : (
-          "Imtihonlar mavjud emas"
+          "Mavjud emas"
         )
       ) : (
         <Skeleton active />
       )}
       <Modal
-        title="Imtihonni o'zgartirish"
+        title={
+          boxtype === "quiz"
+            ? "Imtihonni o'zgartirish"
+            : "Uy ishini o'zgartrish"
+        }
         footer={false}
         open={open}
         onCancel={() => setOpen(false)}

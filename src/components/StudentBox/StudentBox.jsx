@@ -21,7 +21,7 @@ import {
   EyeOutlined,
   UserOutlined,
 } from "@ant-design/icons";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { UserService } from "../../services/UserService";
 import {
   changeUserFailure,
@@ -41,6 +41,7 @@ const StudentBox = () => {
   const [form] = Form.useForm();
   const dispatch = useDispatch();
   const avatar_rf = useRef();
+  const navigate = useNavigate();
 
   const showModal = () => {
     setIsModalOpen(true);
@@ -123,6 +124,10 @@ const StudentBox = () => {
     }
   };
 
+  const handlePaginated = (page) => {
+    navigate(`page=${page}`);
+  };
+
   useEffect(() => {
     handleAllUsers();
   }, [users.isChange]);
@@ -198,7 +203,7 @@ const StudentBox = () => {
       render: (user) => {
         return (
           <div className="d-flex">
-            <Link to={`${user._id}`}>
+            <Link to={`view/${user._id}`}>
               <Button type="primary" icon={<EyeOutlined />}></Button>
             </Link>
             <Button
@@ -247,7 +252,9 @@ const StudentBox = () => {
           dataSource={students}
           size="small"
           scroll={{ x: 1000 }}
-          pagination={{}}
+          pagination={{
+            onChange: handlePaginated,
+          }}
         />
       )}
       <Modal

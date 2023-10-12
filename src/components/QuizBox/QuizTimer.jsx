@@ -14,6 +14,7 @@ const QuizTimer = ({ studentAnswers }) => {
   const dispatch = useDispatch();
   const { isFinished, currentQuiz } = useSelector((state) => state.quiz);
   let { currentUser } = useSelector((state) => state.auth);
+  let timer;
 
   const { quizTime, questions } = currentQuiz;
   const targetTime = {
@@ -28,6 +29,7 @@ const QuizTimer = ({ studentAnswers }) => {
       isFinished
     ) {
       handleScore();
+      clearTimeout(timer);
       clearInterval(interval);
     } else {
       setRemainingTime((prevTime) => {
@@ -85,11 +87,11 @@ const QuizTimer = ({ studentAnswers }) => {
           correctCount,
         };
         currentUser = {
-          ...currentUser,
           accessExam: false,
           history: [...currentUser.history, examResult],
         };
         const id = localStorage.getItem("id");
+        console.log(currentUser);
         const updatedUser = await UserService.updateUser(id, currentUser);
         dispatch(authChangeSuccess(updatedUser));
       } catch (error) {
@@ -97,11 +99,12 @@ const QuizTimer = ({ studentAnswers }) => {
       }
     };
     handleAddHistory();
+    clearTimeout(timer);
   };
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      if (!isFinished) handleScore();
+    timer = setTimeout(() => {
+      handleScore(timer);
     }, targetTime.minutes * 60000);
     return () => {
       clearTimeout(timer);

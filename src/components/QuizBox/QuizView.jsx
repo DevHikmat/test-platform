@@ -21,7 +21,7 @@ const QuizView = () => {
       const data = await QuizService.getOneQuiz(id);
       dispatch(changeQuizSuccess());
       setQuestionList(
-        data.quizzes[0].questions.map((que, index) => ({
+        data.quizzes[0].questions?.map((que, index) => ({
           ...que,
           key: index + 1,
         }))

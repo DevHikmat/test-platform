@@ -15,8 +15,8 @@ const Profile = () => {
   const [form] = Form.useForm();
   const { currentUser, isLoading } = useSelector((state) => state.auth);
   const { groups } = useSelector((state) => state.groups);
-  const dispatch = useDispatch();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const dispatch = useDispatch();
 
   const handleUploadImage = async (e) => {
     dispatch(authChangeStart());
@@ -41,12 +41,17 @@ const Profile = () => {
       updatedInfo = userInfo;
     } else {
       const { firstname, lastname, email } = userInfo;
-      updatedInfo = { firstname, lastname, email };
+      if (currentUser.email === email) {
+        updatedInfo = { firstname, lastname };
+      } else {
+        updatedInfo = { firstname, lastname, email };
+      }
     }
     try {
       const data = await UserService.updateUser(currentUser._id, updatedInfo);
       dispatch(authChangeSuccess(data));
       setIsModalOpen(false);
+      message.success("yangilandi!");
     } catch (error) {
       message.error(error.response.data.message);
       dispatch(authChangeFailure());
@@ -122,6 +127,7 @@ const Profile = () => {
           <Form
             form={form}
             layout="vertical"
+            onFinish={handleUpdateUser}
             initialValues={{
               firstname: currentUser.firstname,
               lastname: currentUser.lastname,
@@ -173,11 +179,7 @@ const Profile = () => {
               <Input placeholder="Yangi parol kiriting" />
             </Form.Item>
             <Form.Item>
-              <Button
-                loading={isLoading}
-                type="primary"
-                onClick={handleUpdateUser}
-              >
+              <Button loading={isLoading} htmlType="submit" type="primary">
                 Yangilash
               </Button>
             </Form.Item>

@@ -27,7 +27,7 @@ import { useNavigate } from "react-router-dom";
 
 const { Option } = Select;
 
-const QuizBox = () => {
+const QuizBox = ({ boxtype = "exam" }) => {
   const [form] = Form.useForm();
   const { category, quiz, auth } = useSelector((state) => state);
   const { quizList, isLoading } = quiz;
@@ -103,7 +103,7 @@ const QuizBox = () => {
       </div>
       <Drawer
         width={400}
-        title="Imtihon qo'shish"
+        title={boxtype === "quiz" ? "Imtihon qo'shish" : "Uyga vazifa qo'shish"}
         placement="right"
         onClose={onClose}
         open={open}
@@ -119,7 +119,9 @@ const QuizBox = () => {
             name="title"
             rules={[{ required: true, message: "maydonni to'ldiring" }]}
           >
-            <Input placeholder="Imtihon nomi" />
+            <Input
+              placeholder={boxtype === "quiz" ? "Imtihon nomi" : "Uy ishi nomi"}
+            />
           </Form.Item>
           <Form.Item
             label="Kategoriya"
@@ -127,13 +129,15 @@ const QuizBox = () => {
             rules={[{ required: true, message: "maydonni to'ldiring" }]}
           >
             <Select placeholder="Tanlash">
-              {category?.category?.map((cat, index) => {
-                return (
-                  <Option key={index} value={cat._id}>
-                    {cat.name}
-                  </Option>
-                );
-              })}
+              {category?.category
+                ?.filter((item) => item.type === boxtype)
+                .map((cat, index) => {
+                  return (
+                    <Option key={index} value={cat._id}>
+                      {cat.name}
+                    </Option>
+                  );
+                })}
             </Select>
           </Form.Item>
           <Form.Item
@@ -141,14 +145,14 @@ const QuizBox = () => {
             name="countQuiz"
             rules={[{ required: true, message: "maydonni to'ldiring" }]}
           >
-            <Input type="number" placeholder="Imtihonda nechta savol bo'lsin" />
+            <Input type="number" placeholder="Nechta savol bo'lsin" />
           </Form.Item>
           <Form.Item
             label="Vaqti(min)"
             name="quizTime"
             rules={[{ required: true, message: "maydonni to'ldiring" }]}
           >
-            <Input type="number" placeholder="Imtihonga beriladigan vaqt" />
+            <Input type="number" placeholder="beriladigan vaqt" />
           </Form.Item>
           <Button loading={isLoading} htmlType="submit">
             Yaratish
@@ -156,8 +160,10 @@ const QuizBox = () => {
         </Form>
       </Drawer>
 
-      <Divider orientation="center">Imtihonlar bo'limi</Divider>
-      {currentUser?.role === "admin" && <QuizAdminBox />}
+      <Divider orientation="center">
+        {boxtype === "exam" ? "Imtihonlar" : "Uy ishlari"} bo'limi
+      </Divider>
+      {currentUser?.role === "admin" && <QuizAdminBox boxtype={boxtype} />}
       <Row gutter={24}>
         {currentUser &&
           quizList?.map((item, index) => {

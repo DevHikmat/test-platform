@@ -116,7 +116,21 @@ const Admin = () => {
     },
     {
       key: "3",
-      icon: <i className="fa-solid fa-layer-group"></i>,
+      icon: <i className="fa-solid fa-home"></i>,
+      label: (
+        <Link
+          to="homeworks"
+          onClick={toggleSiderMenu}
+          style={{ textDecoration: "none" }}
+        >
+          Uyga vazifalar
+        </Link>
+      ),
+      url: "/homeworks",
+    },
+    {
+      key: "4",
+      icon: <i className="fa-solid fa-users"></i>,
       label: (
         <Link
           to="groups"
@@ -129,8 +143,8 @@ const Admin = () => {
       url: "/groups",
     },
     {
-      key: "4",
-      icon: <i className="fa-solid fa-user-group"></i>,
+      key: "5",
+      icon: <i className="fa-solid fa-user"></i>,
       label: (
         <Link
           to="students"
@@ -143,7 +157,7 @@ const Admin = () => {
       url: "/students",
     },
     {
-      key: "5",
+      key: "6",
       icon: <i className="fa-solid fa-graduation-cap"></i>,
       label: (
         <Link
@@ -163,6 +177,7 @@ const Admin = () => {
         <Sider
           breakpoint="lg"
           collapsedWidth="0"
+          width={250}
           trigger={null}
           collapsible
           collapsed={collapsed}
@@ -191,7 +206,7 @@ const Admin = () => {
             items={[
               ...adminItems,
               {
-                key: "6",
+                key: "7",
                 icon: <i className="fa-solid fa-arrow-right-from-bracket"></i>,
                 onClick: handleLogout,
                 label: <div className="logout-box">Profildan chiqish</div>,
@@ -249,9 +264,10 @@ const Admin = () => {
               <Route path="/category/:id" element={<CategoryView />} />
               <Route path="/quiz" element={<QuizBox />} />
               <Route path="/quiz/:id" element={<QuizView />} />
+              <Route path="/homeworks" element={<QuizBox boxtype="task" />} />
               <Route path="/groups" element={<GroupsBox />} />
-              <Route path="/students" element={<StudentBox />} />
-              <Route path="/students/:id" element={<StudentInfoBox />} />
+              <Route path="/students/*" element={<StudentBox />} />
+              <Route path="/students/view/:id" element={<StudentInfoBox />} />
               <Route path="/teachers" element={<TeacherBox />} />
               <Route path="/teachers/:id" element={<TeacherView />} />
               <Route path="/teachers/:id/:id" element={<TeacherGrStudents />} />

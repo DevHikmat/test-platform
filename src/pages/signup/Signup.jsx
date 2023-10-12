@@ -16,6 +16,14 @@ const Signup = () => {
   const { groups } = useSelector((state) => state.groups);
   const dispatch = useDispatch();
   const [user, setUser] = useState(null);
+  const [show, setShow] = useState(false);
+
+  const showPassword = () => {
+    setShow(true);
+  };
+  const hidePassword = () => {
+    setShow(false);
+  };
 
   const handleChange = (e) => {
     setUser({
@@ -86,11 +94,22 @@ const Signup = () => {
               <input
                 id="password"
                 onChange={(e) => handleChange(e)}
-                type="password"
+                type={show ? "text" : "password"}
                 className="shadow"
                 placeholder="parol"
                 required
               />
+              {show ? (
+                <i
+                  onClick={hidePassword}
+                  className="pass-action fa-solid fa-eye"
+                ></i>
+              ) : (
+                <i
+                  onClick={showPassword}
+                  className="pass-action fa-solid fa-eye-slash"
+                ></i>
+              )}
             </div>
             <div className="input-box mb-3">
               <label htmlFor="group" className="fa-solid fa-users-line"></label>

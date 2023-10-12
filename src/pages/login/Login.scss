@@ -32,6 +32,14 @@
       form {
         .input-box {
           position: relative;
+          .pass-action {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            right: 10px;
+            color: #6356e5;
+            cursor: pointer;
+          }
           label {
             color: #6356e5;
             position: absolute;
@@ -45,7 +53,7 @@
             border-radius: 50px;
             height: 40px;
             width: 100%;
-            padding-left: 50px;
+            padding: 0 50px;
             color: #777;
           }
         }

@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { message } from "antd";
@@ -13,9 +13,17 @@ import { setAxiosInstanceToken } from "../../services/axiosInstance";
 
 const Login = () => {
   const { isLoading } = useSelector((state) => state.auth);
+  const [show, setShow] = useState(false);
   const dispatch = useDispatch();
   const email_rf = useRef();
   const passw_rf = useRef();
+
+  const showPassword = () => {
+    setShow(true);
+  };
+  const hidePassword = () => {
+    setShow(false);
+  };
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -58,11 +66,22 @@ const Login = () => {
               <label className="fa-solid fa-lock"></label>
               <input
                 ref={passw_rf}
-                type="password"
+                type={show ? "text" : "password"}
                 className="shadow"
                 placeholder="parol"
                 required
               />
+              {show ? (
+                <i
+                  onClick={hidePassword}
+                  className="pass-action fa-solid fa-eye"
+                ></i>
+              ) : (
+                <i
+                  onClick={showPassword}
+                  className="pass-action fa-solid fa-eye-slash"
+                ></i>
+              )}
             </div>
             <button
               disabled={isLoading}

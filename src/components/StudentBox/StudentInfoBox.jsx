@@ -19,6 +19,7 @@ const StudentInfoBox = () => {
   const { isChange } = useSelector((state) => state.users);
 
   const getViewUser = async () => {
+    console.log(id);
     try {
       const data = await UserService.getOneUser(id);
       setViewUser(data);

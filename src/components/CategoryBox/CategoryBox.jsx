@@ -1,7 +1,12 @@
 import React, { useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Button, Drawer, Modal, Row, message } from "antd";
-import { PlusOutlined, SendOutlined } from "@ant-design/icons";
+import { Button, Drawer, Modal, Row, Tabs, message } from "antd";
+import {
+  AuditOutlined,
+  FileDoneOutlined,
+  PlusOutlined,
+  SendOutlined,
+} from "@ant-design/icons";
 import CategoryItem from "./CategoryItem";
 import "./Category.scss";
 import {
@@ -10,6 +15,11 @@ import {
   changeCategorySuccess,
 } from "../../redux/categorySlice";
 import { CategoryService } from "../../services/CategoryService";
+
+const NAMES = {
+  EXAM: "EXAM",
+  TASK: "TASK",
+};
 
 const CategoryBox = () => {
   const catImage = useRef();
@@ -20,6 +30,7 @@ const CategoryBox = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { category, isLoading } = useSelector((state) => state.category);
   const [tempId, setTempId] = useState("");
+  const [activeTab, setActiveTab] = useState("1");
 
   const [open, setOpen] = useState(false);
   const onClose = () => {
@@ -34,6 +45,8 @@ const CategoryBox = () => {
       let formData = new FormData();
       formData.append("name", catName.current.value);
       formData.append("image", catImage.current.files[0]);
+      if (activeTab === "1") formData.append("type", "exam");
+      else if (activeTab === "2") formData.append("type", "task");
       const data = await CategoryService.createCategory(formData);
       dispatch(changeCategorySuccess());
       message.success(data.message);
@@ -74,18 +87,68 @@ const CategoryBox = () => {
     setIsModalOpen(false);
   };
 
+  const tabContent = (tabName) => {
+    let result;
+    if (tabName === NAMES.EXAM)
+      result = category?.filter((item) => item.type === "exam");
+    else if (tabName === NAMES.TASK)
+      result = category?.filter((item) => item.type === "task");
+    return (
+      <Row gutter={24}>
+        {result?.map((cat, index) => {
+          return (
+            <CategoryItem
+              handleEditCategory={handleEditCategory}
+              key={index}
+              cat={cat}
+              component="category"
+            />
+          );
+        })}
+      </Row>
+    );
+  };
+
+  const tabItems = [
+    {
+      key: "1",
+      label: (
+        <span className="d-flex align-items-center">
+          <AuditOutlined className="fs-5" />
+          Imtihon kategoriyasi
+        </span>
+      ),
+      children: tabContent(NAMES.EXAM),
+    },
+    {
+      key: "2",
+      label: (
+        <span className="d-flex align-items-center">
+          <FileDoneOutlined className="fs-5" />
+          Uygavazifalar kategoriyasi
+        </span>
+      ),
+      children: tabContent(NAMES.TASK),
+    },
+  ];
+
   return (
     <div className="category-box">
       <div className="category-box-actions">
-        <div className="d-flex justify-content-end">
-          <Button
-            className="category-add-btn"
-            icon={<PlusOutlined />}
-            onClick={() => {
-              setOpen(true);
-            }}
-          />
-        </div>
+        <Tabs
+          onChange={(key) => setActiveTab(key)}
+          items={tabItems}
+          tabBarExtraContent={
+            <Button
+              className="category-add-btn"
+              icon={<PlusOutlined />}
+              onClick={() => {
+                setOpen(true);
+              }}
+            />
+          }
+        />
+        <div className="d-flex justify-content-end"></div>
         <>
           <Drawer
             title="Categoriya yaratish"
@@ -121,17 +184,6 @@ const CategoryBox = () => {
         </>
       </div>
       <hr />
-      <Row gutter={24}>
-        {category?.map((cat, index) => {
-          return (
-            <CategoryItem
-              handleEditCategory={handleEditCategory}
-              key={index}
-              cat={cat}
-            />
-          );
-        })}
-      </Row>
       <Modal
         footer={false}
         title="Kategoiya ma'lumotlarini o'zgartirish"

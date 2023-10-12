@@ -8,8 +8,11 @@ import {
   changeCategorySuccess,
 } from "../../redux/categorySlice";
 import { CategoryService } from "../../services/CategoryService";
-const CategoryItem = ({ cat, handleEditCategory }) => {
+import { memo } from "react";
+const CategoryItem = ({ cat, handleEditCategory, component = "" }) => {
   const dispatch = useDispatch();
+
+  // console.log(cat);
 
   const handleDeleteCategory = async (id) => {
     dispatch(changeCategoryStart());
@@ -42,7 +45,7 @@ const CategoryItem = ({ cat, handleEditCategory }) => {
           <div className="content">
             <h6>{cat.name}</h6>
             <div className="d-flex gap-3">
-              <Link to={`category/${cat._id}`}>
+              <Link to={`${component && component + "/"}${cat._id}`}>
                 <Button icon={<EyeOutlined />}></Button>
               </Link>
               <Button
@@ -66,4 +69,4 @@ const CategoryItem = ({ cat, handleEditCategory }) => {
   );
 };
 
-export default CategoryItem;
+export default memo(CategoryItem);

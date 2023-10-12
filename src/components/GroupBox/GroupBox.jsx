@@ -147,8 +147,8 @@ const GroupsBox = () => {
       key: "10",
       title: "Ustoz",
       render: (group) => {
-        console.log(group, teacherList);
-        return teacherList.find((teach) => teach._id === group._id)?.firstname;
+        return teacherList.find((teach) => teach._id === group.teacherId)
+          ?.firstname;
       },
     },
     {
