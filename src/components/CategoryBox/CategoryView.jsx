@@ -39,7 +39,8 @@ const CategoryView = () => {
 
   const handleAllQuestion = async () => {
     try {
-      const data = await QuestionService.getAllQuestions();
+      const data = await QuestionService.getAllQuestions(id, 1);
+      console.log(data);
       setQuestionList(
         data?.question
           .filter((que) => que.category === id)

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { message } from "antd";
@@ -10,10 +10,11 @@ import {
 } from "../../redux/authSlice";
 import "./Signup.scss";
 import { setAxiosInstanceToken } from "../../services/axiosInstance";
+import { GroupService } from "../../services/GroupService";
 
 const Signup = () => {
   const { isLoading } = useSelector((state) => state.auth);
-  const { groups } = useSelector((state) => state.groups);
+  const [groups, setGroups] = useState([]);
   const dispatch = useDispatch();
   const [user, setUser] = useState(null);
   const [show, setShow] = useState(false);
@@ -47,6 +48,20 @@ const Signup = () => {
       message.error("Bunday foydalanuvchi allaqachon ro'yxatdan o'tgan!");
     }
   };
+
+  const handleGroups = async () => {
+    try {
+      const data = await GroupService.getAllGroups();
+      setGroups(data.groups);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    handleGroups();
+  }, []);
+
   return (
     <div className="signup">
       <div className="signup-content shadow">
@@ -113,6 +128,7 @@ const Signup = () => {
             </div>
             <div className="input-box mb-3">
               <label htmlFor="group" className="fa-solid fa-users-line"></label>
+              {console.log(groups)}
               <select
                 name="group"
                 id="group"

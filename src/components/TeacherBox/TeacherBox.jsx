@@ -30,11 +30,11 @@ const TeacherBox = () => {
   const [open, setOpen] = useState(false);
   const [form] = Form.useForm();
 
-  const handleAllUsers = async () => {
+  const handleTeachers = async () => {
     dispatch(changeUserStart());
     try {
-      let data = await UserService.getAllUsers();
-      setDataSource(data.filter((user) => user.role === "teacher"));
+      let data = await UserService.getTeachers();
+      setDataSource(data);
       dispatch(getAllUsersSuccess());
     } catch (error) {
       message.error(error.response.data.message);
@@ -56,7 +56,7 @@ const TeacherBox = () => {
     }
   };
   useEffect(() => {
-    handleAllUsers();
+    handleTeachers();
   }, [isChange]);
 
   return (

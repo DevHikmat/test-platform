@@ -23,28 +23,19 @@ import {
   changeGroupFailure,
   changeGroupStart,
   changeGroupSuccess,
+  getGroupsSuccess,
 } from "../../redux/groupSlice";
 import "./GroupBox.scss";
-import { UserService } from "../../services/UserService";
 const { Option } = Select;
 
-const GroupsBox = () => {
+const GroupsBox = ({ teacherList }) => {
   const dispatch = useDispatch();
   const { groups } = useSelector((state) => state);
+  const { isChange } = groups;
   const [dataSource, setDataSource] = useState(null);
   const [editingRow, setEditingRow] = useState(null);
-  const [teacherList, setTeacherList] = useState([]);
   const [form] = Form.useForm();
   const [open, setOpen] = useState(false);
-
-  const handleAllUsers = async () => {
-    try {
-      let data = await UserService.getAllUsers();
-      setTeacherList(data.filter((user) => user.role === "teacher"));
-    } catch (error) {
-      message.error(error.response.data.message);
-    }
-  };
 
   const handleOk = async () => {
     let group = form.getFieldsValue();
@@ -76,10 +67,6 @@ const GroupsBox = () => {
       dispatch(changeGroupFailure());
     }
   };
-
-  useEffect(() => {
-    handleAllUsers();
-  }, []);
 
   useEffect(() => {
     setDataSource(
@@ -128,6 +115,21 @@ const GroupsBox = () => {
     }
   };
 
+  const handleGroups = async () => {
+    dispatch(changeGroupStart());
+    try {
+      const data = await GroupService.getAllGroups();
+      dispatch(getGroupsSuccess(data.groups));
+    } catch (error) {
+      message.error(error.response.data.message);
+      dispatch(changeGroupFailure());
+    }
+  };
+
+  useEffect(() => {
+    handleGroups();
+  }, [isChange]);
+
   const groupColumns = [
     { key: "1", title: "#", render: (group) => <>{group.key}</> },
     {
@@ -147,7 +149,7 @@ const GroupsBox = () => {
       key: "10",
       title: "Ustoz",
       render: (group) => {
-        return teacherList.find((teach) => teach._id === group.teacherId)
+        return teacherList?.find((teach) => teach._id === group.teacherId)
           ?.firstname;
       },
     },

@@ -1,5 +1,5 @@
 import { DeleteOutlined, EditOutlined, EyeOutlined } from "@ant-design/icons";
-import { Button, Card, Col, Popconfirm, message } from "antd";
+import { Button, Col, Popconfirm, Row, message } from "antd";
 import { useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
 import {
@@ -11,8 +11,6 @@ import { CategoryService } from "../../services/CategoryService";
 import { memo } from "react";
 const CategoryItem = ({ cat, handleEditCategory, component = "" }) => {
   const dispatch = useDispatch();
-
-  // console.log(cat);
 
   const handleDeleteCategory = async (id) => {
     dispatch(changeCategoryStart());
@@ -26,29 +24,25 @@ const CategoryItem = ({ cat, handleEditCategory, component = "" }) => {
     }
   };
   return (
-    <Col xs={24} sm={24} md={8} lg={8} xl={6}>
-      <div className="category-box-item">
-        <Card
-          hoverable
-          style={{
-            width: "100%",
-            marginBottom: "30px",
-          }}
-          cover={
+    <Col xs={24} sm={24} md={24} lg={12} xl={12}>
+      <div className="category-box-item rounded shadow mb-3">
+        <Row gutter={24}>
+          <Col xl={5}>
             <img
-              alt="category img"
-              style={{ height: "220px", objectFit: "cover" }}
+              style={{ height: "100px", width: "100px", objectFit: "cover" }}
+              className="img-fluid rounded"
               src={cat.image?.url}
-            ></img>
-          }
-        >
-          <div className="content">
-            <h6>{cat.name}</h6>
+              alt="img"
+            />
+          </Col>
+          <Col xl={19}>
+            <h6 className="pt-2">{cat.name}</h6>
             <div className="d-flex gap-3">
               <Link to={`${component && component + "/"}${cat._id}`}>
-                <Button icon={<EyeOutlined />}></Button>
+                <Button size="small" icon={<EyeOutlined />}></Button>
               </Link>
               <Button
+                size="small"
                 onClick={() => handleEditCategory(cat._id)}
                 icon={<EditOutlined />}
               ></Button>
@@ -59,11 +53,11 @@ const CategoryItem = ({ cat, handleEditCategory, component = "" }) => {
                 okType="danger"
                 onConfirm={() => handleDeleteCategory(cat._id)}
               >
-                <Button icon={<DeleteOutlined />}></Button>
+                <Button size="small" icon={<DeleteOutlined />}></Button>
               </Popconfirm>
             </div>
-          </div>
-        </Card>
+          </Col>
+        </Row>
       </div>
     </Col>
   );

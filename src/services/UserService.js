@@ -1,8 +1,12 @@
 import { axiosInstance } from "./axiosInstance";
 
 export const UserService = {
-  async getAllUsers() {
-    const res = await axiosInstance.get("/user");
+  async getStudents(pageNumber) {
+    const res = await axiosInstance.get(`/user/student/${pageNumber}`);
+    return res.data;
+  },
+  async getTeachers() {
+    const res = await axiosInstance.get("/user/teacher/list");
     return res.data;
   },
   async getOneUser(id) {

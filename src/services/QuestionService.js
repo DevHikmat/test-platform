@@ -1,8 +1,10 @@
 import { axiosInstance } from "./axiosInstance";
 
 export const QuestionService = {
-  async getAllQuestions() {
-    const res = await axiosInstance.get("/question");
+  async getAllQuestions(categoryId, currentPage) {
+    const res = await axiosInstance.get(
+      `/question/${categoryId}/${currentPage}`
+    );
     return res.data;
   },
   async addQuestion(formData) {

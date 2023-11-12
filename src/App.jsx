@@ -21,30 +21,19 @@ import Teacher from "./pages/teacher/Teacher";
 import { setAxiosInstanceToken } from "./services/axiosInstance";
 import { message } from "antd";
 
+const adminRoute = [{ path: "/admin/*", element: <Admin /> }];
+const teacherRoute = [{ path: "/teacher/*", element: <Teacher /> }];
+const studentRoute = [{ path: "/student/*", element: <Student /> }];
+
 function App() {
-  const { auth, groups, quiz } = useSelector((state) => state);
+  const { auth, quiz } = useSelector((state) => state);
   const { isLogin } = auth;
-  const { isChange } = groups;
   const { isFinished } = quiz;
 
   const location = useLocation();
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [protectedRoute, setProtectedRoute] = useState(null);
-  let adminRoute = [{ path: "/admin/*", element: <Admin /> }];
-  let teacherRoute = [{ path: "/teacher/*", element: <Teacher /> }];
-  let studentRoute = [{ path: "/student/*", element: <Student /> }];
-
-  const handleGroups = async () => {
-    dispatch(changeGroupStart());
-    try {
-      const data = await GroupService.getAllGroups();
-      dispatch(getGroupsSuccess(data.groups));
-    } catch (error) {
-      message.error(error.response.data.message);
-      dispatch(changeGroupFailure());
-    }
-  };
 
   const getCurrentUser = async (token) => {
     setAxiosInstanceToken(token);
@@ -75,10 +64,6 @@ function App() {
     if (token) getCurrentUser(token);
     else navigate("/login");
   }, [isLogin, isFinished]);
-
-  useEffect(() => {
-    handleGroups();
-  }, [isChange]);
 
   return (
     <div className="App">

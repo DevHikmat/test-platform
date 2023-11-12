@@ -41,6 +41,7 @@ const QuizStudentView = () => {
     try {
       const data = await QuizService.getOneQuiz(id);
       const quizList = data.quizzes[0];
+      console.log(quizList);
       dispatch(getOneQuizSuccess(quizList));
       setCurrentQuiz(quizList);
       setCurrentQuestion(quizList.questions[0]);
@@ -124,6 +125,13 @@ const QuizStudentView = () => {
         </div>
 
         <div className="quiz-user-view-question">
+          {currentQuestion.questionImage.url && !isFinished && (
+            <img
+              src={currentQuestion.questionImage.url}
+              alt="img"
+              className="img-fluid mb-3 w-50"
+            />
+          )}
           <QuizQuestion
             question={currentQuestion}
             index={currentIndex + 1}

@@ -36,6 +36,8 @@ const StudentBox = () => {
 
   const [dataSource, setDataSource] = useState([]);
   const [students, setStudents] = useState([]);
+  const [totalPage, setTotalPage] = useState(1);
+  const [activePageNumber, setActivePageNumber] = useState(1);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [tempId, setTempId] = useState(null);
   const [form] = Form.useForm();
@@ -50,19 +52,19 @@ const StudentBox = () => {
     setIsModalOpen(false);
   };
 
-  const handleAllUsers = async () => {
+  const handleStudents = async (pageNumber = 1) => {
     dispatch(changeUserStart());
     try {
-      let data = await UserService.getAllUsers();
-      data = data
-        .filter((user) => user.role === "student")
-        .map((user, index) => ({ ...user, key: index + 1 }));
+      let data = await UserService.getStudents(pageNumber);
+      setTotalPage(data.totalPage);
+      data = data.users.map((user, index) => ({ ...user, key: index + 1 }));
       setDataSource(data);
       setStudents(data);
       dispatch(getAllUsersSuccess());
     } catch (error) {
       message.error(error.response.data.message);
       dispatch(changeUserSuccess());
+      console.log(error);
     }
   };
 
@@ -126,11 +128,13 @@ const StudentBox = () => {
 
   const handlePaginated = (page) => {
     navigate(`page=${page}`);
+    setActivePageNumber(page);
+    handleStudents(page);
   };
 
   useEffect(() => {
-    handleAllUsers();
-  }, [users.isChange]);
+    handleStudents();
+  }, []);
 
   const searchByName = (value) => {
     setStudents(
@@ -254,6 +258,10 @@ const StudentBox = () => {
           scroll={{ x: 1000 }}
           pagination={{
             onChange: handlePaginated,
+            defaultCurrent: activePageNumber,
+            pageSize: 15,
+            total: 15 * totalPage,
+            showSizeChanger: false,
           }}
         />
       )}

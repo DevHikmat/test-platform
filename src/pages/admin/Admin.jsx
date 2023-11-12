@@ -28,6 +28,7 @@ import StudentInfoBox from "../../components/StudentBox/StudentInfoBox";
 import TeacherBox from "../../components/TeacherBox/TeacherBox";
 import TeacherView from "../../components/TeacherBox/TeacherView";
 import TeacherGrStudents from "../../components/TeacherBox/TeacherGrStudents";
+import { UserService } from "../../services/UserService";
 const { Header, Sider, Content } = Layout;
 
 const Admin = () => {
@@ -37,9 +38,20 @@ const Admin = () => {
   const dispatch = useDispatch();
   const location = useLocation();
   const navigate = useNavigate();
+  const [teacherList, setTeacherList] = useState([]);
+
   const {
     token: { colorBgContainer },
   } = theme.useToken();
+
+  const handleTeachers = async () => {
+    try {
+      let data = await UserService.getTeachers();
+      setTeacherList(data);
+    } catch (error) {
+      message.error(error.response.data.message);
+    }
+  };
 
   const handleAllQuiz = async () => {
     dispatch(changeQuizStart());
@@ -71,6 +83,7 @@ const Admin = () => {
 
   useEffect(() => {
     toggleSiderMenu();
+    handleTeachers();
   }, []);
 
   useEffect(() => {
@@ -265,7 +278,11 @@ const Admin = () => {
               <Route path="/quiz" element={<QuizBox />} />
               <Route path="/quiz/:id" element={<QuizView />} />
               <Route path="/homeworks" element={<QuizBox boxtype="task" />} />
-              <Route path="/groups" element={<GroupsBox />} />
+              <Route path="/homeworks/:id" element={<QuizView />} />
+              <Route
+                path="/groups"
+                element={<GroupsBox teacherList={teacherList} />}
+              />
               <Route path="/students/*" element={<StudentBox />} />
               <Route path="/students/view/:id" element={<StudentInfoBox />} />
               <Route path="/teachers" element={<TeacherBox />} />

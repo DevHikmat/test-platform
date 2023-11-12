@@ -3,6 +3,7 @@ import { axiosInstance } from "./axiosInstance";
 export const GroupService = {
   async getAllGroups() {
     const { data } = await axiosInstance.get(`/group`);
+    console.log(data);
     return data;
   },
   async addGroup(group) {
