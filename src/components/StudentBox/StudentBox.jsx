@@ -30,12 +30,14 @@ import {
   getAllUsersSuccess,
 } from "../../redux/userSlice";
 import "./StudentBox.scss";
+import { GroupService } from "../../services/GroupService";
 
 const StudentBox = () => {
-  const { users, groups } = useSelector((state) => state);
+  const { users } = useSelector((state) => state);
 
-  const [dataSource, setDataSource] = useState([]);
+  const [groups, setGroups] = useState([]);
   const [students, setStudents] = useState([]);
+  const [currentPageData, setCurrentPageData] = useState([]);
   const [totalPage, setTotalPage] = useState(1);
   const [activePageNumber, setActivePageNumber] = useState(1);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -52,13 +54,22 @@ const StudentBox = () => {
     setIsModalOpen(false);
   };
 
+  const handleAllGroups = async () => {
+    try {
+      const data = await GroupService.getAllGroups();
+      setGroups(data.groups);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   const handleStudents = async (pageNumber = 1) => {
     dispatch(changeUserStart());
     try {
       let data = await UserService.getStudents(pageNumber);
       setTotalPage(data.totalPage);
       data = data.users.map((user, index) => ({ ...user, key: index + 1 }));
-      setDataSource(data);
+      setCurrentPageData(data);
       setStudents(data);
       dispatch(getAllUsersSuccess());
     } catch (error) {
@@ -71,7 +82,7 @@ const StudentBox = () => {
   const handleFillModal = (id) => {
     showModal();
     setTempId(id);
-    const user = dataSource.find((item) => item._id === id);
+    const user = currentPageData.find((item) => item._id === id);
     const group = groups.groups?.find((group) => group._id === user.group);
     form.setFieldsValue({
       firstname: user.firstname,
@@ -132,26 +143,25 @@ const StudentBox = () => {
     handleStudents(page);
   };
 
+  const handleSearchStudent = async (searchTerm) => {
+    searchTerm = searchTerm.trim();
+    if (searchTerm.length < 2) return setStudents(currentPageData);
+    try {
+      let data = await UserService.searchStudent(searchTerm);
+      data = data.map((user, index) => ({ ...user, key: index + 1 }));
+      setStudents(data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   useEffect(() => {
     handleStudents();
+    handleAllGroups();
   }, []);
 
-  const searchByName = (value) => {
-    setStudents(
-      dataSource.filter((user) =>
-        user.firstname.toLowerCase().includes(value.toLowerCase())
-      )
-    );
-  };
-  const searchBySurname = (value) => {
-    setStudents(
-      dataSource.filter((user) =>
-        user.lastname.toLowerCase().includes(value.toLowerCase())
-      )
-    );
-  };
   const groupFiller = (user) => {
-    const group = groups.groups?.find((item) => item._id === user.group);
+    const group = groups?.find((item) => item._id === user.group);
     if (group) return group.name;
     else return "Noaniq";
   };
@@ -182,7 +192,8 @@ const StudentBox = () => {
       key: "5",
       title: "Guruhi",
       render: (user) => {
-        return groupFiller(user);
+        if (groups.length) return groupFiller(user);
+        else return "";
       },
     },
     {
@@ -233,19 +244,12 @@ const StudentBox = () => {
   return (
     <div className="student-box">
       <Divider orientation="left">Qidirish</Divider>
-      <div className="row row-cols-md-4 row-cols-lg-4 mb-5">
-        <div className="col">
-          <Input
-            placeholder="Ism bo'yicha"
-            onChange={(e) => searchByName(e.target.value)}
-          />
-        </div>
-        <div className="col">
-          <Input
-            placeholder="Familya bo'yicha"
-            onChange={(e) => searchBySurname(e.target.value)}
-          />
-        </div>
+      <div className="mb-3">
+        <Input
+          className="w-50"
+          onChange={(e) => handleSearchStudent(e.target.value)}
+          placeholder="Ism yoki familya orqali qidirish..."
+        />
       </div>
 
       {users.isLoading ? (
@@ -260,7 +264,7 @@ const StudentBox = () => {
             onChange: handlePaginated,
             defaultCurrent: activePageNumber,
             pageSize: 15,
-            total: 15 * totalPage,
+            total: students.length < 15 ? 15 : 15 * totalPage,
             showSizeChanger: false,
           }}
         />

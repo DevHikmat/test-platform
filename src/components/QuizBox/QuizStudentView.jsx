@@ -125,7 +125,7 @@ const QuizStudentView = () => {
         </div>
 
         <div className="quiz-user-view-question">
-          {currentQuestion.questionImage.url && !isFinished && (
+          {currentQuestion.questionImage?.url && !isFinished && (
             <img
               src={currentQuestion.questionImage.url}
               alt="img"

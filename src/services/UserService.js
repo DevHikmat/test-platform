@@ -21,4 +21,10 @@ export const UserService = {
     const res = await axiosInstance.put(`/user/${id}`, user);
     return res.data;
   },
+  async searchStudent(searchTerm) {
+    const res = await axiosInstance.post(`/user/search/student`, {
+      searchTerm,
+    });
+    return res.data;
+  },
 };
