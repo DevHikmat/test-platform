@@ -41,7 +41,6 @@ const QuizStudentView = () => {
     try {
       const data = await QuizService.getOneQuiz(id);
       const quizList = data.quizzes[0];
-      console.log(quizList);
       dispatch(getOneQuizSuccess(quizList));
       setCurrentQuiz(quizList);
       setCurrentQuestion(quizList.questions[0]);

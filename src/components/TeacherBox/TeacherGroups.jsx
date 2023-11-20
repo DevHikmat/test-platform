@@ -1,4 +1,4 @@
-import { Button, Switch, Table, Skeleton } from "antd";
+import { Button, Switch, Table, Skeleton, message } from "antd";
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { GroupService } from "../../services/GroupService";
@@ -14,7 +14,7 @@ const TeacherGroups = () => {
       const { groups } = await GroupService.getTeacherGroups(currentUser._id);
       setDataSource(groups.map((item, index) => ({ ...item, key: index + 1 })));
     } catch (error) {
-      console.log(error);
+      message.error(error.response.data.message);
     }
   };
   useEffect(() => {
@@ -27,9 +27,8 @@ const TeacherGroups = () => {
       const data = await GroupService.groupExamToggler(_id, {
         access: !accessExam,
       });
-      console.log(data);
     } catch (error) {
-      console.log(error);
+      message.error(error.response.data.message);
     }
   };
 

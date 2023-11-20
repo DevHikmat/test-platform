@@ -54,7 +54,7 @@ const Signup = () => {
       const data = await GroupService.getAllGroups();
       setGroups(data.groups);
     } catch (error) {
-      console.log(error);
+      message.error(error.response.data.message);
     }
   };
 
@@ -128,7 +128,6 @@ const Signup = () => {
             </div>
             <div className="input-box mb-3">
               <label htmlFor="group" className="fa-solid fa-users-line"></label>
-              {console.log(groups)}
               <select
                 name="group"
                 id="group"

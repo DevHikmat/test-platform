@@ -68,7 +68,7 @@ const TeacherGrStudents = () => {
       const data = await GroupService.getGroupStudents(id);
       setStudents(data.map((user, index) => ({ ...user, key: index + 1 })));
     } catch (error) {
-      console.log(error);
+      message.error(error.response.data.message);
     }
   };
 

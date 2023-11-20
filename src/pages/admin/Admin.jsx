@@ -39,7 +39,6 @@ const Admin = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const [teacherList, setTeacherList] = useState([]);
-
   const {
     token: { colorBgContainer },
   } = theme.useToken();

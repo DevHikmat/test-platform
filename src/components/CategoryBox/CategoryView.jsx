@@ -10,7 +10,7 @@ import {
   message,
 } from "antd";
 import { useDispatch, useSelector } from "react-redux";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { DeleteOutlined } from "@ant-design/icons";
 import { QuestionService } from "../../services/QuestionService";
@@ -22,12 +22,18 @@ import {
 const { TextArea } = Input;
 
 const CategoryView = () => {
+  const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [questionList, setQuestionList] = useState(null);
   const { id } = useParams();
   const { isChange, isLoading } = useSelector((state) => state.question);
   const [form] = Form.useForm();
   const dispatch = useDispatch();
   const [queUrl, setQueUrl] = useState(null);
+  const [activePageNumber, setActivePageNumber] = useState(
+    +searchParams.get("page") || 1
+  );
+  const [totalPage, setTotalPage] = useState(1);
 
   const [open, setOpen] = useState(false);
   const showDrawer = () => {
@@ -37,14 +43,15 @@ const CategoryView = () => {
     setOpen(false);
   };
 
-  const handleAllQuestion = async () => {
+  const handleAllQuestion = async (page = 1) => {
     try {
-      const data = await QuestionService.getAllQuestions(id, 1);
-      console.log(data);
+      const data = await QuestionService.getAllQuestions(id, page);
+      setTotalPage(data.totalPage);
       setQuestionList(
-        data?.question
-          .filter((que) => que.category === id)
-          .map((item, index) => ({ ...item, key: index + 1 }))
+        data?.question.map((item, index) => ({
+          ...item,
+          key: index + 1 + (activePageNumber - 1) * 20,
+        }))
       );
     } catch (error) {
       message.error(error.response.data.message);
@@ -88,6 +95,12 @@ const CategoryView = () => {
     }
   };
 
+  const handlePaginatedQuestion = (page) => {
+    navigate(`?page=${page}`);
+    setActivePageNumber(page);
+    handleAllQuestion(page);
+  };
+
   const handleDeleteQuestion = async (id) => {
     dispatch(changeQueStart());
     try {
@@ -101,7 +114,7 @@ const CategoryView = () => {
   };
 
   useEffect(() => {
-    handleAllQuestion();
+    handleAllQuestion(activePageNumber);
   }, [isChange]);
 
   const columns = [
@@ -230,6 +243,12 @@ const CategoryView = () => {
             size="small"
             columns={columns}
             dataSource={questionList}
+            pagination={{
+              onChange: handlePaginatedQuestion,
+              defaultCurrent: activePageNumber,
+              pageSize: 20,
+              total: 20 * totalPage,
+            }}
           />
         ) : (
           <h6 className="text-left">Savol qo'shilmagan!</h6>

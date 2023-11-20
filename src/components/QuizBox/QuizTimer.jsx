@@ -91,7 +91,6 @@ const QuizTimer = ({ studentAnswers }) => {
           history: [...currentUser.history, examResult],
         };
         const id = localStorage.getItem("id");
-        console.log(currentUser);
         const updatedUser = await UserService.updateUser(id, currentUser);
         dispatch(authChangeSuccess(updatedUser));
       } catch (error) {

@@ -21,7 +21,12 @@ import {
   EyeOutlined,
   UserOutlined,
 } from "@ant-design/icons";
-import { Link, useNavigate } from "react-router-dom";
+import {
+  Link,
+  useNavigate,
+  useLocation,
+  useSearchParams,
+} from "react-router-dom";
 import { UserService } from "../../services/UserService";
 import {
   changeUserFailure,
@@ -35,11 +40,16 @@ import { GroupService } from "../../services/GroupService";
 const StudentBox = () => {
   const { users } = useSelector((state) => state);
 
+  const location = useLocation();
+
+  const [searchParams, setSearchParams] = useSearchParams();
   const [groups, setGroups] = useState([]);
   const [students, setStudents] = useState([]);
   const [currentPageData, setCurrentPageData] = useState([]);
   const [totalPage, setTotalPage] = useState(1);
-  const [activePageNumber, setActivePageNumber] = useState(1);
+  const [activePageNumber, setActivePageNumber] = useState(
+    +searchParams.get("page") || 1
+  );
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [tempId, setTempId] = useState(null);
   const [form] = Form.useForm();
@@ -53,13 +63,12 @@ const StudentBox = () => {
   const closeModal = () => {
     setIsModalOpen(false);
   };
-
   const handleAllGroups = async () => {
     try {
       const data = await GroupService.getAllGroups();
       setGroups(data.groups);
     } catch (error) {
-      console.log(error);
+      message.error(error.response.data.message);
     }
   };
 
@@ -68,22 +77,27 @@ const StudentBox = () => {
     try {
       let data = await UserService.getStudents(pageNumber);
       setTotalPage(data.totalPage);
-      data = data.users.map((user, index) => ({ ...user, key: index + 1 }));
+      data = data.users.map((user, index) => ({
+        ...user,
+        key: index + 1 + (pageNumber - 1) * 15,
+      }));
       setCurrentPageData(data);
       setStudents(data);
       dispatch(getAllUsersSuccess());
     } catch (error) {
       message.error(error.response.data.message);
       dispatch(changeUserSuccess());
-      console.log(error);
+      message.error(error.response.data.message);
     }
   };
+
+  console.log(location);
 
   const handleFillModal = (id) => {
     showModal();
     setTempId(id);
     const user = currentPageData.find((item) => item._id === id);
-    const group = groups.groups?.find((group) => group._id === user.group);
+    const group = groups?.find((group) => group._id === user.group);
     form.setFieldsValue({
       firstname: user.firstname,
       lastname: user.lastname,
@@ -138,7 +152,7 @@ const StudentBox = () => {
   };
 
   const handlePaginated = (page) => {
-    navigate(`page=${page}`);
+    navigate(`?page=${page}`);
     setActivePageNumber(page);
     handleStudents(page);
   };
@@ -151,12 +165,12 @@ const StudentBox = () => {
       data = data.map((user, index) => ({ ...user, key: index + 1 }));
       setStudents(data);
     } catch (error) {
-      console.log(error);
+      message.error(error.response.data.message);
     }
   };
 
   useEffect(() => {
-    handleStudents();
+    handleStudents(activePageNumber);
     handleAllGroups();
   }, []);
 
@@ -264,7 +278,7 @@ const StudentBox = () => {
             onChange: handlePaginated,
             defaultCurrent: activePageNumber,
             pageSize: 15,
-            total: students.length < 15 ? 15 : 15 * totalPage,
+            total: 15 * totalPage,
             showSizeChanger: false,
           }}
         />
@@ -321,7 +335,7 @@ const StudentBox = () => {
             ]}
           >
             <Select>
-              {groups.groups?.map((group, index) => {
+              {groups?.map((group, index) => {
                 return (
                   <Select.Option value={group._id} key={index}>
                     {group.name}

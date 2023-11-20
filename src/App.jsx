@@ -53,7 +53,6 @@ function App() {
       }
       dispatch(authChangeSuccess(data));
     } catch (error) {
-      console.log(error);
       dispatch(authChangeFailure());
       navigate("/login");
     }
