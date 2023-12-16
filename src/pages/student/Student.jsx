@@ -174,7 +174,7 @@ const Student = () => {
                     {currentUser?.profilePicture ? (
                       <Image
                         preview={false}
-                        src={currentUser.profilePicture.url}
+                        src={currentUser?.profilePicture?.url}
                       />
                     ) : (
                       <Image
