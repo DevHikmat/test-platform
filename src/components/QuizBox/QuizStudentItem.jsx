@@ -15,7 +15,7 @@ const QuizStudentItem = ({ quiz, modalHandler }) => {
               <img
                 src={
                   category?.category?.find((cat) => cat._id === quiz.categoryId)
-                    .image.url
+                    ?.image.url
                 }
                 className="img-fluid"
                 alt="category img"

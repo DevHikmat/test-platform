@@ -124,9 +124,9 @@ const QuizStudentView = () => {
         </div>
 
         <div className="quiz-user-view-question">
-          {currentQuestion.questionImage?.url && !isFinished && (
+          {currentQuestion?.questionImage?.url && !isFinished && (
             <img
-              src={currentQuestion.questionImage.url}
+              src={currentQuestion?.questionImage?.url}
               alt="img"
               className="img-fluid mb-3 w-50"
             />
@@ -158,13 +158,13 @@ const QuizStudentView = () => {
 
             {(currentIndex + 1 === currentQuiz.questions.length ||
               studentAnswers.length === currentQuiz.questions.length) && (
-              <Button
-                className="bg-success text-white"
-                onClick={handleFinishExam}
-              >
-                Yakunlash
-              </Button>
-            )}
+                <Button
+                  className="bg-success text-white"
+                  onClick={handleFinishExam}
+                >
+                  Yakunlash
+                </Button>
+              )}
           </div>
         )}
       </div>
