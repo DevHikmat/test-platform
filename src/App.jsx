@@ -13,7 +13,6 @@ import Student from "./pages/student/Student";
 import Admin from "./pages/admin/Admin";
 import Teacher from "./pages/teacher/Teacher";
 import { setAxiosInstanceToken } from "./services/axiosInstance";
-import { message } from "antd";
 
 const adminRoute = [{ path: "/admin/*", element: <Admin /> }];
 const teacherRoute = [{ path: "/teacher/*", element: <Teacher /> }];
