@@ -1,13 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Routes, Route, useNavigate, useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { GroupService } from "./services/GroupService";
 import { UserService } from "./services/UserService";
-import {
-  getGroupsSuccess,
-  changeGroupStart,
-  changeGroupFailure,
-} from "./redux/groupSlice";
 import {
   authChangeStart,
   authChangeSuccess,

@@ -22,6 +22,7 @@ import {
   getAllCategorySuccess,
 } from "../../redux/categorySlice";
 import { CategoryService } from "../../services/CategoryService";
+import HomeworkBox from "../../components/Homework/HomeworkBox";
 const { Header, Sider, Content } = Layout;
 
 const Student = () => {
@@ -97,6 +98,20 @@ const Student = () => {
     },
     {
       key: "2",
+      icon: <i className="fa-solid fa-book"></i>,
+      label: (
+        <Link
+          to={isExamStart ? "#" : "homeworks"}
+          onClick={toggleSiderMenu}
+          style={{ textDecoration: "none" }}
+        >
+          Uy ishlari
+        </Link>
+      ),
+      url: "",
+    },
+    {
+      key: "3",
       icon: <i className="fa-solid fa-user"></i>,
       label: (
         <Link
@@ -144,7 +159,7 @@ const Student = () => {
             items={[
               ...items,
               {
-                key: "3",
+                key: "4",
                 icon: <i className="fa-solid fa-arrow-right-from-bracket"></i>,
                 onClick: handleLogout,
                 label: <div className="logout-box">Profildan chiqish</div>,
@@ -201,6 +216,8 @@ const Student = () => {
           >
             <Routes>
               <Route path="/" element={<QuizBox />} />
+              <Route path="/homeworks" element={<HomeworkBox />} />
+              <Route path="/homeworks/:id" element={<QuizStudentView />} />
               <Route path="/profile" element={<Profile />} />
               <Route path="/quiz/:id" element={<QuizStudentView />} />
               <Route path="/history" element={<HistoryBox />} />

@@ -27,7 +27,7 @@ import { useNavigate } from "react-router-dom";
 
 const { Option } = Select;
 
-const QuizBox = ({ boxtype = "exam" }) => {
+const QuizBox = ({ boxtype = "exam", existHomeworks }) => {
   const [form] = Form.useForm();
   const { category, quiz, auth } = useSelector((state) => state);
   const { quizList, isLoading } = quiz;
@@ -41,7 +41,9 @@ const QuizBox = ({ boxtype = "exam" }) => {
   const handleModalOk = () => {
     dispatch(quizExamStart());
     setIsOpenModal(false);
-    navigate(`quiz/${quizId}`);
+    const currentQuiz = quizList.find(item => item._id === quizId);
+    if (currentQuiz.type === "exam") navigate(`quiz/${quizId}`);
+    else navigate(`${quizId}`);
     message.info("Imtihon boshlandi. Omad!");
   };
   const showDrawer = () => {
@@ -103,7 +105,7 @@ const QuizBox = ({ boxtype = "exam" }) => {
       </div>
       <Drawer
         width={400}
-        title={boxtype === "quiz" ? "Imtihon qo'shish" : "Uyga vazifa qo'shish"}
+        title={boxtype === "exam" ? "Imtihon qo'shish" : "Uyga vazifa qo'shish"}
         placement="right"
         onClose={onClose}
         open={open}
@@ -120,7 +122,7 @@ const QuizBox = ({ boxtype = "exam" }) => {
             rules={[{ required: true, message: "maydonni to'ldiring" }]}
           >
             <Input
-              placeholder={boxtype === "quiz" ? "Imtihon nomi" : "Uy ishi nomi"}
+              placeholder={boxtype === "exam" ? "Imtihon nomi" : "Uy ishi nomi"}
             />
           </Form.Item>
           <Form.Item
@@ -166,9 +168,11 @@ const QuizBox = ({ boxtype = "exam" }) => {
       {currentUser?.role === "admin" && <QuizAdminBox boxtype={boxtype} />}
       <Row gutter={24}>
         {currentUser &&
-          quizList?.map((item, index) => {
-            return quizItemHandler(item, index);
-          })}
+          existHomeworks ? existHomeworks.map((item, index) => quizItemHandler(item, index)) : quizList?.filter(quiz => {
+            let catId = category?.category?.find(cat => cat._id === quiz.categoryId);
+            if (catId?.type === boxtype) return quiz;
+          }).map((item, index) => quizItemHandler(item, index))
+        }
       </Row>
 
       <Modal
