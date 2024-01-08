@@ -66,7 +66,6 @@ const QuizStudentView = () => {
     return (event.returnValue = "Are you sure you want to leave?");
   };
   useEffect(() => {
-    if (!currentUser.accessExam) return navigate("/student");
     handleGetOneQuiz();
     dispatch(quizExamStart());
     window.history.pushState(null, document.title, window.location.href);

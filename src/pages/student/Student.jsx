@@ -218,8 +218,8 @@ const Student = () => {
               <Route path="/" element={<QuizBox />} />
               <Route path="/homeworks" element={<HomeworkBox />} />
               <Route path="/homeworks/:id" element={<QuizStudentView />} />
-              <Route path="/profile" element={<Profile />} />
               <Route path="/quiz/:id" element={<QuizStudentView />} />
+              <Route path="/profile" element={<Profile />} />
               <Route path="/history" element={<HistoryBox />} />
             </Routes>
           </Content>
