@@ -11,10 +11,9 @@ import {
 import { UserService } from "../../services/UserService";
 import HistoryBox from "../HistoryBox/HistoryBox";
 
-const Profile = () => {
+const Profile = ({ groups }) => {
   const [form] = Form.useForm();
   const { currentUser, isLoading } = useSelector((state) => state.auth);
-  const { groups } = useSelector((state) => state.groups);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const dispatch = useDispatch();
 

@@ -50,7 +50,7 @@ const CategoryView = () => {
       setQuestionList(
         data?.question.map((item, index) => ({
           ...item,
-          key: index + 1 + (activePageNumber - 1) * 20,
+          key: (index + 1) + (page - 1) * 20,
         }))
       );
     } catch (error) {

@@ -108,7 +108,7 @@ const QuizTimer = ({ studentAnswers }) => {
     return () => {
       clearTimeout(timer);
     };
-  }, [currentQuiz]);
+  }, []);
 
   useEffect(() => {
     const interval = setInterval(() => countDown(interval), 1000);

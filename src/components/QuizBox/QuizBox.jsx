@@ -42,7 +42,8 @@ const QuizBox = ({ boxtype = "exam", existHomeworks }) => {
     dispatch(quizExamStart());
     setIsOpenModal(false);
     const currentQuiz = quizList.find(item => item._id === quizId);
-    if (currentQuiz.type === "exam") navigate(`quiz/${quizId}`);
+    const currentQuizCategory = category.category?.find(cat => cat._id === currentQuiz.categoryId);
+    if (currentQuizCategory?.type === "exam") navigate(`quiz/${quizId}`);
     else navigate(`${quizId}`);
     message.info("Imtihon boshlandi. Omad!");
   };

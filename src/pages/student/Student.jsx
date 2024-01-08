@@ -23,6 +23,7 @@ import {
 } from "../../redux/categorySlice";
 import { CategoryService } from "../../services/CategoryService";
 import HomeworkBox from "../../components/Homework/HomeworkBox";
+import { GroupService } from "../../services/GroupService";
 const { Header, Sider, Content } = Layout;
 
 const Student = () => {
@@ -32,6 +33,7 @@ const Student = () => {
   const { currentUser } = useSelector((state) => state.auth);
   const { isExamStart } = useSelector((state) => state.quiz);
   const [collapsed, setCollapsed] = useState(false);
+  const [groups, setGroups] = useState(null);
   const {
     token: { colorBgContainer },
   } = theme.useToken();
@@ -43,6 +45,15 @@ const Student = () => {
     dispatch(authLogout());
     navigate("/login");
   };
+
+  const handleGetAllGroups = async () => {
+    try {
+      const data = await GroupService.getAllGroups();
+      setGroups(data.groups);
+    } catch (error) {
+      console.log(error);
+    }
+  }
 
   const handleGetAllQuiz = async () => {
     dispatch(changeQuizStart());
@@ -76,6 +87,7 @@ const Student = () => {
   };
 
   useEffect(() => {
+    handleGetAllGroups()
     handleGetAllQuiz();
     toggleSiderMenu();
     handleAllCategory();
@@ -219,7 +231,7 @@ const Student = () => {
               <Route path="/homeworks" element={<HomeworkBox />} />
               <Route path="/homeworks/:id" element={<QuizStudentView />} />
               <Route path="/quiz/:id" element={<QuizStudentView />} />
-              <Route path="/profile" element={<Profile />} />
+              <Route path="/profile" element={<Profile groups={groups} />} />
               <Route path="/history" element={<HistoryBox />} />
             </Routes>
           </Content>
