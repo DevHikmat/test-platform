@@ -46,8 +46,9 @@ const TeacherBox = () => {
     dispatch(changeUserStart());
     try {
       await AuthService.signup({ ...values, role: "teacher" });
-      const users = await UserService.getAllUsers();
-      dispatch(changeUserSuccess(users));
+      const teachers = await UserService.getTeachers();
+      setDataSource(teachers)
+      dispatch(changeUserSuccess());
       setOpen(false);
       message.success("Ustoz qo'shildi");
     } catch (error) {

@@ -47,8 +47,7 @@ const TeacherView = () => {
     dispatch(changeUserStart());
     try {
       await UserService.deleteUser(teacher._id);
-      const data = await UserService.getAllUsers();
-      dispatch(changeUserSuccess(data));
+      dispatch(changeUserSuccess());
       message.success("Ustoz o'chirildi!");
       navigate("/admin/teachers/");
     } catch (error) {
@@ -128,20 +127,20 @@ const TeacherView = () => {
             <div className="own-group">
               {groups && groups.length > 0
                 ? groups.map((group, index) => {
-                    return (
-                      <Link to={`${group._id}`} key={index}>
-                        <div className="own-group-item card-body rounded shadow mb-3">
-                          <h6>{group.name}</h6>
-                          <div className="d-flex gap-3">
-                            <p className="text-muted">Ochilgan sanasi: </p>
-                            <p>
-                              {moment(group.createdAt).format("DD-MM-YYYY")} yil
-                            </p>
-                          </div>
+                  return (
+                    <Link to={`${group._id}`} key={index}>
+                      <div className="own-group-item card-body rounded shadow mb-3">
+                        <h6>{group.name}</h6>
+                        <div className="d-flex gap-3">
+                          <p className="text-muted">Ochilgan sanasi: </p>
+                          <p>
+                            {moment(group.createdAt).format("DD-MM-YYYY")} yil
+                          </p>
                         </div>
-                      </Link>
-                    );
-                  })
+                      </div>
+                    </Link>
+                  );
+                })
                 : "Guruhlar mavjud emas!"}
             </div>
           </Col>
