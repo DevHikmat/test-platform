@@ -69,6 +69,7 @@ const QuizTimer = ({ studentAnswers }) => {
       try {
         const response = await fetch("http://worldtimeapi.org/api/ip");
         data = await response.json();
+        console.log(data);
         return data;
       } catch (error) {
         data = new Date();
@@ -98,13 +99,12 @@ const QuizTimer = ({ studentAnswers }) => {
       }
     };
     handleAddHistory();
-    clearTimeout(timer);
   };
 
   useEffect(() => {
     timer = setTimeout(() => {
       handleScore(timer);
-    }, targetTime.minutes * 60000);
+    }, (targetTime.minutes * 60000));
     return () => {
       clearTimeout(timer);
     };
@@ -116,6 +116,7 @@ const QuizTimer = ({ studentAnswers }) => {
       clearInterval(interval);
     };
   }, [remainingTime]);
+
 
   return (
     <div

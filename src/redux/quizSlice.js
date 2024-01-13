@@ -45,6 +45,10 @@ export const quizSlice = createSlice({
       state.isFinished = true;
       state.totalScore = action.payload;
     },
+    quizFinishFromButton: (state) => {
+      state.isExamStart = false;
+      state.isFinished = true;
+    },
   },
 });
 export const {
@@ -55,5 +59,6 @@ export const {
   getOneQuizSuccess,
   quizExamStart,
   quizFinishSuccess,
+  quizFinishFromButton,
 } = quizSlice.actions;
 export default quizSlice.reducer;

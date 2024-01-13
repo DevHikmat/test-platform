@@ -40,8 +40,6 @@ import { GroupService } from "../../services/GroupService";
 const StudentBox = () => {
   const { users } = useSelector((state) => state);
 
-  const location = useLocation();
-
   const [searchParams, setSearchParams] = useSearchParams();
   const [groups, setGroups] = useState([]);
   const [students, setStudents] = useState([]);
@@ -91,7 +89,6 @@ const StudentBox = () => {
     }
   };
 
-  console.log(location);
 
   const handleFillModal = (id) => {
     showModal();
@@ -119,6 +116,7 @@ const StudentBox = () => {
       await UserService.updateUser(tempId, formData);
       dispatch(changeUserSuccess());
       message.success("Student ma'lumoti yangilandi.");
+      handleStudents(activePageNumber);
       closeModal();
     } catch (error) {
       message.error(error.response.data.message);
@@ -131,6 +129,7 @@ const StudentBox = () => {
     try {
       const data = await UserService.deleteUser(id);
       dispatch(changeUserSuccess());
+      handleStudents(activePageNumber)
       message.success(data);
     } catch (error) {
       message.error(error.response.data.message);
@@ -144,6 +143,11 @@ const StudentBox = () => {
       await UserService.updateUser(id, {
         accessExam: !accessExam,
       });
+      setCurrentPageData(prev => prev.map(item => {
+        if (item.id === id) return { ...item, accessExam: !item.accessExam }
+        else return item;
+      }))
+      message.success("Ruxsat o'zgardi!");
       dispatch(changeUserSuccess());
     } catch (error) {
       message.error(error.response.data.message);
@@ -266,23 +270,19 @@ const StudentBox = () => {
         />
       </div>
 
-      {users.isLoading ? (
-        <Skeleton active />
-      ) : (
-        <Table
-          columns={columns}
-          dataSource={students}
-          size="small"
-          scroll={{ x: 1000 }}
-          pagination={{
-            onChange: handlePaginated,
-            defaultCurrent: activePageNumber,
-            pageSize: 15,
-            total: 15 * totalPage,
-            showSizeChanger: false,
-          }}
-        />
-      )}
+      <Table
+        columns={columns}
+        dataSource={students}
+        size="small"
+        scroll={{ x: 1000 }}
+        pagination={{
+          onChange: handlePaginated,
+          defaultCurrent: activePageNumber,
+          pageSize: 15,
+          total: 15 * totalPage,
+          showSizeChanger: false,
+        }}
+      />
       <Modal
         width={350}
         footer={false}

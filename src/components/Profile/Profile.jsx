@@ -160,18 +160,6 @@ const Profile = ({ groups }) => {
               <Input placeholder="Familya" />
             </Form.Item>
             <Form.Item
-              name="email"
-              label="E-mail"
-              rules={[
-                {
-                  required: true,
-                  message: "maydonni to'ldiring",
-                },
-              ]}
-            >
-              <Input placeholder="E-mail" />
-            </Form.Item>
-            <Form.Item
               name="password"
               label="Yangi parol(Yangilash kerak bo'lmasa shart emas)"
             >

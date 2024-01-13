@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { Button, Divider, message } from "antd";
 import { LeftOutlined, RightOutlined } from "@ant-design/icons";
@@ -9,15 +9,14 @@ import {
   changeQuizStart,
   getOneQuizSuccess,
   quizExamStart,
-  quizFinishSuccess,
+  quizFinishFromButton,
 } from "../../redux/quizSlice";
 import "./Quiz.scss";
 import QuizTimer from "./QuizTimer";
 import QuizQuestion from "./QuizQuestion";
 
 const QuizStudentView = () => {
-  const { quiz, auth } = useSelector((state) => state);
-  const { currentUser } = auth;
+  const { quiz } = useSelector((state) => state);
   const { isFinished } = quiz;
   const [currentQuiz, setCurrentQuiz] = useState(null);
   const [currentQuestion, setCurrentQuestion] = useState(null);
@@ -25,7 +24,6 @@ const QuizStudentView = () => {
   const [studentAnswers, setStudentAnswers] = useState([]);
   const dispatch = useDispatch();
   const { id } = useParams();
-  const navigate = useNavigate();
 
   const handleNextQuestion = () => {
     setCurrentQuestion(currentQuiz.questions[currentIndex + 1]);
@@ -51,7 +49,7 @@ const QuizStudentView = () => {
   };
 
   const handleFinishExam = () => {
-    dispatch(quizFinishSuccess());
+    dispatch(quizFinishFromButton());
   };
 
   const handleContextMenu = (e) => {
@@ -62,19 +60,14 @@ const QuizStudentView = () => {
     window.history.pushState(null, document.title, window.location.href);
   };
 
-  const handleBeforeUnload = (event) => {
-    return (event.returnValue = "Are you sure you want to leave?");
-  };
   useEffect(() => {
     handleGetOneQuiz();
     dispatch(quizExamStart());
     window.history.pushState(null, document.title, window.location.href);
     document.addEventListener("contextmenu", handleContextMenu);
     window.addEventListener("popstate", handlePopstate);
-    window.addEventListener("beforeunload", handleBeforeUnload);
     return () => {
       document.removeEventListener("contextmenu", handleContextMenu);
-      window.removeEventListener("beforeunload", handleBeforeUnload);
       window.removeEventListener("popstate", handlePopstate);
     };
   }, [id]);
