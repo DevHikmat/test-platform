@@ -71,6 +71,7 @@ const StudentBox = () => {
   };
 
   const handleStudents = async (pageNumber = 1) => {
+    message.loading("loading...");
     dispatch(changeUserStart());
     try {
       let data = await UserService.getStudents(pageNumber);
@@ -79,6 +80,7 @@ const StudentBox = () => {
         ...user,
         key: index + 1 + (pageNumber - 1) * 15,
       }));
+      message.destroy();
       setCurrentPageData(data);
       setStudents(data);
       dispatch(getAllUsersSuccess());
@@ -88,7 +90,6 @@ const StudentBox = () => {
       message.error(error.response.data.message);
     }
   };
-
 
   const handleFillModal = (id) => {
     showModal();
@@ -161,9 +162,9 @@ const StudentBox = () => {
     handleStudents(page);
   };
 
-  const handleSearchStudent = async (searchTerm) => {
-    searchTerm = searchTerm.trim();
-    if (searchTerm.length < 2) return setStudents(currentPageData);
+  const handleSearchStudent = async (event) => {
+    let searchTerm = event.target.value.trim();
+    if (searchTerm.length <= 2) return setStudents(currentPageData);
     try {
       let data = await UserService.searchStudent(searchTerm);
       data = data.map((user, index) => ({ ...user, key: index + 1 }));
@@ -265,7 +266,7 @@ const StudentBox = () => {
       <div className="mb-3">
         <Input
           className="w-50"
-          onChange={(e) => handleSearchStudent(e.target.value)}
+          onChange={handleSearchStudent}
           placeholder="Ism yoki familya orqali qidirish..."
         />
       </div>

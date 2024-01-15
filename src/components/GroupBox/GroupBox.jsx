@@ -4,6 +4,7 @@ import {
   CheckOutlined,
   DeleteOutlined,
   EditOutlined,
+  EyeOutlined,
   PlusOutlined,
 } from "@ant-design/icons";
 import {
@@ -26,6 +27,7 @@ import {
   getGroupsSuccess,
 } from "../../redux/groupSlice";
 import "./GroupBox.scss";
+import { Link } from "react-router-dom";
 const { Option } = Select;
 
 const GroupsBox = ({ teacherList }) => {
@@ -87,8 +89,8 @@ const GroupsBox = ({ teacherList }) => {
 
   const saveChanges = async () => {
     dispatch(changeGroupStart());
-    let { editName, editCompany } = form.getFieldsValue();
-    let group = { name: editName, company: editCompany };
+    let { editName, editCompany, editTeacher } = form.getFieldsValue();
+    let group = { name: editName, company: editCompany, teacherId: editTeacher };
     try {
       const data = await GroupService.updateGroup(editingRow, group);
       dispatch(changeGroupSuccess());
@@ -149,8 +151,20 @@ const GroupsBox = ({ teacherList }) => {
       key: "10",
       title: "Ustoz",
       render: (group) => {
-        return teacherList?.find((teach) => teach._id === group.teacherId)
-          ?.firstname;
+        if (group._id === editingRow) {
+          return <Form.Item name="editTeacher" className="mb-0">
+            <Select>
+              {
+                teacherList?.map(teach => {
+                  return <Option value={teach._id}>{teach.firstname}</Option>
+                })
+              }
+            </Select>
+          </Form.Item>
+        } else {
+          return teacherList?.find((teach) => teach._id === group.teacherId)
+            ?.firstname;
+        }
       },
     },
     {
@@ -190,6 +204,9 @@ const GroupsBox = ({ teacherList }) => {
       render: (group) => {
         return (
           <div className="d-flex gap-2">
+            <Link to={`${group._id}`}>
+              <Button icon={<EyeOutlined />}></Button>
+            </Link>
             {group._id === editingRow ? (
               <Button
                 loading={groups.isLoading}

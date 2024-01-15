@@ -282,6 +282,14 @@ const Admin = () => {
                 path="/groups"
                 element={<GroupsBox teacherList={teacherList} />}
               />
+              <Route
+                path="/groups/:id"
+                element={<TeacherGrStudents />}
+              />
+              <Route
+                path="/groups/:id/:id"
+                element={<StudentInfoBox />}
+              />
               <Route path="/students/*" element={<StudentBox />} />
               <Route path="/students/view/:id" element={<StudentInfoBox />} />
               <Route path="/teachers" element={<TeacherBox />} />

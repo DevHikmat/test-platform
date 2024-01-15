@@ -26,6 +26,7 @@ const Login = () => {
   };
 
   const handleLogin = async (e) => {
+    message.loading("loading...")
     e.preventDefault();
     dispatch(authChangeStart());
     try {
