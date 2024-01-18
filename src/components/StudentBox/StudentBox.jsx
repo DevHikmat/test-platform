@@ -274,6 +274,7 @@ const StudentBox = () => {
       <Table
         columns={columns}
         dataSource={students}
+        bordered
         size="small"
         scroll={{ x: 1000 }}
         pagination={{

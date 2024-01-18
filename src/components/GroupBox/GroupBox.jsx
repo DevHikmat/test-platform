@@ -325,6 +325,7 @@ const GroupsBox = ({ teacherList }) => {
           <Form form={form}>
             <Table
               size="small"
+              bordered
               pagination={{ defaultPageSize: 10 }}
               columns={groupColumns}
               dataSource={dataSource}

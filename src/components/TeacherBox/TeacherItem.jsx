@@ -15,11 +15,12 @@ const TeacherItem = ({ teach }) => {
           }}
           cover={
             <img
+              style={{ height: '250px' }}
               alt="example"
               src={
                 teach.profilePicture
                   ? teach.profilePicture.url
-                  : "https://static.vecteezy.com/system/resources/thumbnails/006/877/520/small/work-character-solid-icon-illustration-office-workers-teachers-judges-police-artists-employees-free-vector.jpg"
+                  : "https://cdn-icons-png.flaticon.com/512/46/46139.png"
               }
             />
           }

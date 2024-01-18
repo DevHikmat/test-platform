@@ -120,7 +120,7 @@ const QuizAdminBox = ({ boxtype }) => {
       {console.log(dataSource)}
       {quizList ? (
         quizList.length > 0 ? (
-          <Table columns={columns} dataSource={dataSource} />
+          <Table columns={columns} bordered dataSource={dataSource} />
         ) : (
           "Mavjud emas"
         )

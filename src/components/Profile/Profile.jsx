@@ -22,6 +22,7 @@ const Profile = ({ groups }) => {
     try {
       let formData = new FormData();
       formData.append("profilePicture", e.target.files[0]);
+      console.log(currentUser.profilePicture);
       currentUser.profilePicture &&
         formData.append("public_id", currentUser.profilePicture.public_id);
       const data = await UserService.updateUser(currentUser._id, formData);
@@ -70,7 +71,7 @@ const Profile = ({ groups }) => {
             />
           )}
           <input
-            accept="image/*"
+            accept="image/png, image/jpg, image/jpeg"
             onChange={(e) => handleUploadImage(e)}
             id="avatar"
             type="file"

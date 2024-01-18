@@ -32,8 +32,8 @@ import {
 
 import { UserService } from "../../services/UserService";
 const TeacherGrStudents = () => {
-  const { studentList, isLoading } = useSelector((state) => state.users);
-  const { groups } = useSelector((state) => state.groups);
+  const { isLoading } = useSelector((state) => state.users);
+  const [groups, setGroups] = useState([]);
   const [form] = Form.useForm();
   const dispatch = useDispatch();
   const [students, setStudents] = useState(null);
@@ -41,6 +41,19 @@ const TeacherGrStudents = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [tempId, setTempId] = useState(null);
   const [isUpdate, setIsUpdate] = useState(false);
+
+  const handleGroups = async () => {
+    try {
+      const data = await GroupService.getAllGroups();
+      setGroups(data.groups);
+    } catch (error) {
+      message.error(error.response.data.message);
+    }
+  };
+
+  useEffect(() => {
+    handleGroups();
+  }, []);
 
   const showModal = () => {
     setIsModalOpen(true);
@@ -79,12 +92,12 @@ const TeacherGrStudents = () => {
   const handleFillModal = (id) => {
     showModal();
     setTempId(id);
-    const user = studentList.find((item) => item._id === id);
-    const group = groups.find((group) => group._id === user.group);
+    const user = students.find((item) => item._id === id);
+    const group = groups.find((group) => group._id === user?.group);
     form.setFieldsValue({
       firstname: user.firstname,
       lastname: user.lastname,
-      group: group._id,
+      group: group?._id,
     });
   };
 
@@ -203,8 +216,9 @@ const TeacherGrStudents = () => {
         students.length > 0 ? (
           <>
             <Table
-              scroll={{ x: 800, y: 500 }}
+              scroll={{ x: 800 }}
               columns={columns}
+              bordered
               dataSource={students}
               size="small"
             />

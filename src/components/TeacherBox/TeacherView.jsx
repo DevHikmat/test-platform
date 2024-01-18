@@ -12,7 +12,8 @@ import { GroupService } from "../../services/GroupService";
 import { Col, Divider, Popconfirm, Row, Skeleton, message } from "antd";
 
 const TeacherView = () => {
-  const { isLoading } = useSelector((state) => state.users);
+  const { isLoading } = useSelector(state => state.users);
+  const [teacherGroupLoader, setTeacherGroupLoader] = useState(true);
   const navigate = useNavigate();
   const [teacher, setTeacher] = useState(null);
   const [groups, setGroups] = useState(null);
@@ -41,6 +42,7 @@ const TeacherView = () => {
       message.error(error.response.data.message);
       dispatch(changeUserFailure());
     }
+    setTeacherGroupLoader(false);
   };
 
   const handleDeleteTeacher = async () => {
@@ -62,71 +64,69 @@ const TeacherView = () => {
   }, [id]);
   return (
     <div className="teacher-view">
-      {isLoading ? (
-        <Skeleton active />
-      ) : (
-        <Row gutter={24}>
-          <Col xs={24} sm={24} md={12} lg={6} xl={6} xxl={6}>
-            {teacher && (
-              <div className="teacher-card shadow rounded">
-                <img
-                  className="card-img-top"
-                  style={{
-                    height: "220px",
-                    objectFit: "cover",
-                    borderRadius: "10px 10px 0 0",
-                  }}
-                  src={
-                    teacher.profilePicture
-                      ? teacher.profilePicture.url
-                      : "https://schoolknot.com/website/img/bg-img/default.png"
+      <Row gutter={24}>
+        <Col xs={24} sm={24} md={12} lg={6} xl={6} xxl={6}>
+          {
+            isLoading ? <Skeleton /> : teacher && <div className="teacher-card shadow rounded">
+              <img
+                className="card-img-top"
+                style={{
+                  height: "220px",
+                  objectFit: "cover",
+                  borderRadius: "10px 10px 0 0",
+                }}
+                src={
+                  teacher.profilePicture
+                    ? teacher.profilePicture.url
+                    : "https://cdn-icons-png.flaticon.com/512/46/46139.png"
+                }
+                alt="teacher-img"
+              />
+              <div className="card-body">
+                <figure>
+                  <blockquote>
+                    <h6>
+                      {teacher.firstname} {teacher.lastname}
+                    </h6>
+                  </blockquote>
+                  <div className="blockquote-footer">{teacher.email}</div>
+                </figure>
+                <p className="text-muted">
+                  {teacher.subject ? (
+                    <div>
+                      <span className="text-muted">Fan nomi: </span>
+                      <span className="ms-2 text-success">
+                        {teacher.subject}
+                      </span>
+                    </div>
+                  ) : (
+                    <span className="text-warning">Fan kiritilmagan</span>
+                  )}
+                </p>
+                <Popconfirm
+                  title={
+                    teacher.firstname +
+                    " haqidagi barcha ma'lumotlar o'chib ketsinmi?"
                   }
-                  alt="teacher-img"
-                />
-                <div className="card-body">
-                  <figure>
-                    <blockquote>
-                      <h6>
-                        {teacher.firstname} {teacher.lastname}
-                      </h6>
-                    </blockquote>
-                    <div className="blockquote-footer">{teacher.email}</div>
-                  </figure>
-                  <p className="text-muted">
-                    {teacher.subject ? (
-                      <div>
-                        <span className="text-muted">Fan nomi: </span>
-                        <span className="ms-2 text-success">
-                          {teacher.subject}
-                        </span>
-                      </div>
-                    ) : (
-                      <span className="text-warning">Fan kiritilmagan</span>
-                    )}
+                  okText="o'chirish"
+                  okType="danger"
+                  cancelText="bekor"
+                  onConfirm={handleDeleteTeacher}
+                >
+                  <p style={{ cursor: "pointer" }} className="text-danger">
+                    Ustozni o'chirish
                   </p>
-                  <Popconfirm
-                    title={
-                      teacher.firstname +
-                      " haqidagi barcha ma'lumotlar o'chib ketsinmi?"
-                    }
-                    okText="o'chirish"
-                    okType="danger"
-                    cancelText="bekor"
-                    onConfirm={handleDeleteTeacher}
-                  >
-                    <p style={{ cursor: "pointer" }} className="text-danger">
-                      Ustozni o'chirish
-                    </p>
-                  </Popconfirm>
-                </div>
+                </Popconfirm>
               </div>
-            )}
-          </Col>
-          <Col xs={24} sm={24} md={12} lg={18} xl={18} xxl={18}>
-            <Divider orientation="left">Tegishli guruhlar</Divider>
-            <div className="own-group">
-              {groups && groups.length > 0
-                ? groups.map((group, index) => {
+            </div>
+          }
+        </Col>
+        <Col xs={24} sm={24} md={12} lg={18} xl={18} xxl={18}>
+          <Divider orientation="left">Tegishli guruhlar</Divider>
+          <div className="own-group">
+            {
+              teacherGroupLoader ? <Skeleton active /> : (
+                groups.length > 0 ? groups.map((group, index) => {
                   return (
                     <Link to={`${group._id}`} key={index}>
                       <div className="own-group-item card-body rounded shadow mb-3">
@@ -140,12 +140,12 @@ const TeacherView = () => {
                       </div>
                     </Link>
                   );
-                })
-                : "Guruhlar mavjud emas!"}
-            </div>
-          </Col>
-        </Row>
-      )}
+                }) : "Guruhlar mavjud emas!"
+              )
+            }
+          </div>
+        </Col>
+      </Row>
     </div>
   );
 };
