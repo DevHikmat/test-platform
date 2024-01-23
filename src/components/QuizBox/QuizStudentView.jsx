@@ -55,22 +55,19 @@ const QuizStudentView = () => {
   const handleContextMenu = (e) => {
     e.preventDefault();
   };
-
   const handlePopstate = () => {
-    window.history.pushState(null, document.title, window.location.href);
+    window.history.pushState(null, null, window.location.href);
   };
-
   useEffect(() => {
     handleGetOneQuiz();
     dispatch(quizExamStart());
-    window.history.pushState(null, document.title, window.location.href);
+    handlePopstate();
     document.addEventListener("contextmenu", handleContextMenu);
-    window.addEventListener("popstate", handlePopstate);
     return () => {
       document.removeEventListener("contextmenu", handleContextMenu);
-      window.removeEventListener("popstate", handlePopstate);
     };
   }, [id]);
+
 
   const handleQuestionChange = (index) => {
     setCurrentIndex(index);

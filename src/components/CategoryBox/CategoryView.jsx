@@ -1,4 +1,4 @@
-import { PlusOutlined } from "@ant-design/icons";
+import { EditOutlined, PlusOutlined, SaveOutlined } from "@ant-design/icons";
 import {
   Table,
   Button,
@@ -33,10 +33,15 @@ const CategoryView = () => {
   const [activePageNumber, setActivePageNumber] = useState(
     +searchParams.get("page") || 1
   );
+  const [editQueId, setEditQueId] = useState(null);
   const [totalPage, setTotalPage] = useState(1);
 
   const [open, setOpen] = useState(false);
+
   const showDrawer = () => {
+    setQueUrl(null);
+    clearDraverInputs()
+    setEditQueId(null);
     setOpen(true);
   };
   const onClose = () => {
@@ -57,43 +62,100 @@ const CategoryView = () => {
       message.error(error.response.data.message);
     }
   };
+  // input validation cheking function
+  const checkQuestionValid = (values) => {
+    const { quizQuestion, correctAnswer, choice1, choice2, choice3 } = values;
+    if (!quizQuestion || !correctAnswer || !choice1 || !choice2 || !choice3) {
+      message.warning("Iltimos barcha maydonlarni to'ldiring!");
+      return false;
+    }
+    if (quizQuestion.length < 5) {
+      message.warning("Savol uzunligi 5 dan kam bo'lmasligi kerak!");
+      return false;
+    }
+    if (correctAnswer.length < 3) {
+      message.warning("To'g'ri javob uzunligi 3 dan kam bo'lmasligi kerak!");
+      return false;
+    }
+    return true;
+  }
+  // create form data from input values
+  const createFormDataForQuestion = (values) => {
+    const { quizQuestion, correctAnswer, choice1, choice2, choice3 } = values;
+
+    const editingQuestion = questionList.find(que => que._id === editQueId);
+    let formData = new FormData();
+    if (typeof queUrl === "object" && queUrl !== null) {
+      editingQuestion?.questionImage && formData.append("public_id", editingQuestion.questionImage.public_id);
+      formData.append("questionImage", queUrl);
+    }
+    formData.append("quizQuestion", quizQuestion);
+    formData.append("correctAnswer", correctAnswer);
+    formData.append("choice1", choice1);
+    formData.append("choice2", choice2);
+    formData.append("choice3", choice3);
+    formData.append("category", id);
+    return formData;
+  }
+  // clear inputs from ant draver
+  const clearDraverInputs = () => {
+    form.setFieldsValue({
+      quizQuestion: "",
+      correctAnswer: "",
+      choice1: "",
+      choice2: "",
+      choice3: "",
+    });
+  }
 
   const handleAddQuestion = async (values) => {
-    const { quizQuestion, correctAnswer, choice1, choice2, choice3 } = values;
-    if (!quizQuestion || !correctAnswer || !choice1 || !choice2 || !choice3)
-      return message.warning("Iltimos barcha maydonlarni to'ldiring!");
-    if (quizQuestion.length < 5)
-      return message.warning("Savol uzunligi 5 dan kam bo'lmasligi kerak!");
-    if (correctAnswer.length < 3)
-      return message.warning(
-        "To'g'ri javob uzunligi 3 dan kam bo'lmasligi kerak!"
-      );
+    if (!checkQuestionValid(values)) return;
     dispatch(changeQueStart());
     try {
-      let formData = new FormData();
-      queUrl && formData.append("questionImage", queUrl);
-      formData.append("quizQuestion", quizQuestion);
-      formData.append("correctAnswer", correctAnswer);
-      formData.append("choice1", choice1);
-      formData.append("choice2", choice2);
-      formData.append("choice3", choice3);
-      formData.append("category", id);
+      let formData = createFormDataForQuestion(values);
       const data = await QuestionService.addQuestion(formData);
       dispatch(changeQueSuccess());
+      console.log(data);
       message.success(data.message);
+      clearDraverInputs();
       setQueUrl(null);
-      form.setFieldsValue({
-        quizQuestion: "",
-        correctAnswer: "",
-        choice1: "",
-        choice2: "",
-        choice3: "",
-      });
     } catch (error) {
       message.error(error.response.data.message);
       dispatch(changeQueFailure());
     }
   };
+
+  const handleOpenEditable = (id) => {
+    setEditQueId(id);
+    setOpen(true);
+    const editingQuestion = questionList.find(que => que._id === id);
+    if (editingQuestion.questionImage) setQueUrl(editingQuestion.questionImage.url);
+    else setQueUrl(null);
+    form.setFieldsValue({
+      quizQuestion: editingQuestion.quizQuestion,
+      correctAnswer: editingQuestion.correctAnswer,
+      choice1: editingQuestion.choice1,
+      choice2: editingQuestion.choice2,
+      choice3: editingQuestion.choice3,
+    });
+  }
+
+  const handleSaveUpdates = async (values) => {
+    if (!checkQuestionValid(values)) return;
+    dispatch(changeQueStart());
+    try {
+      let formData = createFormDataForQuestion(values);
+      const data = await QuestionService.updateQuestion(editQueId, formData);
+      dispatch(changeQueSuccess());
+      message.success(data.message);
+      clearDraverInputs();
+      setQueUrl(null);
+      setOpen(false);
+    } catch (error) {
+      message.error(error.response.data.message);
+      dispatch(changeQueFailure());
+    }
+  }
 
   const handlePaginatedQuestion = (page) => {
     navigate(`?page=${page}`);
@@ -139,17 +201,22 @@ const CategoryView = () => {
     },
     {
       key: "action",
-      title: "O'chirish",
+      title: "Amaliyot",
       width: "100px",
       render: (que) => {
         return (
-          <Button
-            icon={<DeleteOutlined />}
-            type="primary"
-            disabled={isLoading}
-            danger
-            onClick={() => handleDeleteQuestion(que._id)}
-          ></Button>
+          <div className="d-flex gap-3">
+            <Button
+              icon={<EditOutlined />}
+              onClick={() => handleOpenEditable(que._id)}
+            />
+            <Button
+              icon={<DeleteOutlined />}
+              disabled={isLoading}
+              danger
+              onClick={() => handleDeleteQuestion(que._id)}
+            ></Button>
+          </div>
         );
       },
     },
@@ -178,14 +245,14 @@ const CategoryView = () => {
               form={form}
               labelCol={{ span: 5 }}
               labelAlign="left"
-              onFinish={handleAddQuestion}
+              onFinish={editQueId ? handleSaveUpdates : handleAddQuestion}
             >
               <Form.Item>
                 <div className="question-img">
                   <label htmlFor="queImg">
                     {queUrl ? (
                       <img
-                        src={URL.createObjectURL(queUrl)}
+                        src={typeof queUrl === "object" ? URL.createObjectURL(queUrl) : queUrl}
                         alt="savol rasmi"
                       />
                     ) : (
@@ -220,15 +287,17 @@ const CategoryView = () => {
                 <Input />
               </Form.Item>
               <Form.Item>
-                <Button
-                  className="my-3 d-flex align-items-center"
-                  htmlType="submit"
-                  icon={<PlusOutlined />}
-                  disabled={isLoading}
-                  loading={isLoading}
-                >
-                  Savolni saqlash
-                </Button>
+                {
+                  editQueId ? <Button htmlType="submit" icon={<SaveOutlined />} className="my-3 d-flex align-items-center" disabled={isLoading} loading={isLoading}>O'zgarishlarni saqlash</Button> : <Button
+                    className="my-3 d-flex align-items-center"
+                    htmlType="submit"
+                    icon={<PlusOutlined />}
+                    disabled={isLoading}
+                    loading={isLoading}
+                  >
+                    Savolni saqlash
+                  </Button>
+                }
               </Form.Item>
             </Form>
           </div>
@@ -241,6 +310,7 @@ const CategoryView = () => {
             ellipsize={true}
             style={{ width: "100%" }}
             size="small"
+            bordered
             columns={columns}
             dataSource={questionList}
             pagination={{

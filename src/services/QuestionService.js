@@ -11,6 +11,10 @@ export const QuestionService = {
     const res = await axiosInstance.post("/question", formData);
     return res.data;
   },
+  async updateQuestion(id, formData) {
+    const res = await axiosInstance.put(`/question/${id}`, formData);
+    return res.data;
+  },
   async deleteQuestion(id) {
     const res = await axiosInstance.delete(`/question/${id}`);
     return res.data;
