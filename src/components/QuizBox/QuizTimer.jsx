@@ -12,8 +12,9 @@ import { UserService } from "../../services/UserService";
 
 const QuizTimer = ({ studentAnswers }) => {
   const dispatch = useDispatch();
-  const { isFinished, currentQuiz } = useSelector((state) => state.quiz);
-  let { currentUser } = useSelector((state) => state.auth);
+  const { quiz, auth, category } = useSelector((state) => state);
+  const { isFinished, currentQuiz } = quiz;
+  let { currentUser } = auth;
   let timer;
 
   const { quizTime, questions } = currentQuiz;
@@ -69,7 +70,6 @@ const QuizTimer = ({ studentAnswers }) => {
       try {
         const response = await fetch("http://worldtimeapi.org/api/ip");
         data = await response.json();
-        console.log(data);
         return data;
       } catch (error) {
         data = new Date();
@@ -80,15 +80,17 @@ const QuizTimer = ({ studentAnswers }) => {
       const data = await getCurrentTime();
       dispatch(authChangeStart());
       try {
+        let currentCategory = category.category?.find(cat => cat._id === currentQuiz.categoryId);
         let examResult = {
           id: uuidv4(),
+          type: currentCategory.type,
           title: currentQuiz.title,
           countQuiz: currentQuiz.countQuiz,
           examMoment: moment(data.datetime).format("MMMM Do YYYY, h:mm"),
           correctCount,
         };
         currentUser = {
-          accessExam: false,
+          accessExam: currentCategory.type === "exam" ? false : true,
           history: [...currentUser.history, examResult],
         };
         const id = localStorage.getItem("id");

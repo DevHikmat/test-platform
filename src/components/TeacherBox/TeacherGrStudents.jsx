@@ -26,8 +26,6 @@ import {
   changeUserFailure,
   changeUserStart,
   changeUserSuccess,
-  deleteUserStart,
-  deleteUserSuccess,
 } from "../../redux/userSlice";
 
 import { UserService } from "../../services/UserService";

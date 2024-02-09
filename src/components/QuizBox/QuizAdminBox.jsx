@@ -98,7 +98,6 @@ const QuizAdminBox = ({ boxtype }) => {
     },
   ];
   useEffect(() => {
-    console.log(quizList);
     setDataSource(() =>
       quizList
         ?.filter((quiz) => {
@@ -117,7 +116,6 @@ const QuizAdminBox = ({ boxtype }) => {
   }, [boxtype, quiz, category]);
   return (
     <div>
-      {console.log(dataSource)}
       {quizList ? (
         quizList.length > 0 ? (
           <Table columns={columns} bordered dataSource={dataSource} />

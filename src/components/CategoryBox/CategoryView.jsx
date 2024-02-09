@@ -115,7 +115,6 @@ const CategoryView = () => {
       let formData = createFormDataForQuestion(values);
       const data = await QuestionService.addQuestion(formData);
       dispatch(changeQueSuccess());
-      console.log(data);
       message.success(data.message);
       clearDraverInputs();
       setQueUrl(null);
