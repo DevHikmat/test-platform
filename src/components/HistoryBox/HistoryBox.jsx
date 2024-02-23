@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Button, Divider, Form, InputNumber, Skeleton, Table, message } from "antd";
+import { Button, Divider, Form, InputNumber, Progress, Skeleton, Space, Table, message } from "antd";
 import { useDispatch, useSelector } from "react-redux";
 import {
   changeUserFailure,
@@ -118,14 +118,21 @@ const HistoryBox = () => {
           if (his.practice) result = (result + his.practice) / 2;
           else result = result / 2;
         }
-        return <p>{Math.round(result)}%</p>
+        return <Space className="d-flex justify-content-center align-items-center">
+          <Progress status="active" size={60} type="circle" strokeColor={Math.round(result) >= 60 ? "green" : "red"} percent={Math.round(result)}>%</Progress>
+        </Space>
       }
     },
     {
       key: "result",
       title: "Status",
       render: (his) => {
-        return Math.round((his.correctCount / his.countQuiz) * 100) >= 60 ? (
+        let result = (his.correctCount / his.countQuiz) * 100;
+        if (his.type === "exam") {
+          if (his.practice) result = (result + his.practice) / 2;
+          else result = result / 2;
+        }
+        return Math.round(result) >= 60 ? (
           <span className="text-success">passed</span>
         ) : (
           <span className="text-danger">failed</span>
@@ -139,15 +146,24 @@ const HistoryBox = () => {
 
   return (
     <div className="history-box pt-3">
-      <Divider>Imtihonlar tarixi</Divider>
+      {console.log(history)}
       {history ? (
         history.length > 0 ? (
           <div>
+            <Divider>UYGA VAZIFALAR TARIXI</Divider>
             <Table
               bordered
               scroll={{ x: 900 }}
               columns={columns}
-              dataSource={history}
+              dataSource={history.filter(his => his.type === "task")}
+              pagination={false}
+            />
+            <Divider className="mt-5">IMTIHONLAR TARIXI</Divider>
+            <Table
+              bordered
+              scroll={{ x: 900 }}
+              columns={columns}
+              dataSource={history.filter(his => his.type === "exam")}
               pagination={false}
             />
           </div>

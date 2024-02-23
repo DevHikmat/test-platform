@@ -26,7 +26,7 @@ const Login = () => {
   };
 
   const handleLogin = async (e) => {
-    message.loading("loading...")
+    message.loading("loading...");
     e.preventDefault();
     dispatch(authChangeStart());
     try {
@@ -38,9 +38,11 @@ const Login = () => {
       localStorage.setItem("token", data.token);
       setAxiosInstanceToken(data.token);
       dispatch(authChangeSuccess(data.user));
+      message.destroy();
       message.success(`Salom ${data.user.firstname}!`);
     } catch (error) {
       dispatch(authChangeFailure());
+      message.destroy();
       message.error("Bu foydalanuvchi topilmadi!");
     }
   };
