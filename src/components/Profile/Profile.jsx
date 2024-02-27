@@ -159,12 +159,12 @@ const Profile = ({ groups }) => {
             >
               <Input placeholder="Familya" />
             </Form.Item>
-            <Form.Item
+            {currentUser.role !== "student" && <Form.Item
               name="password"
               label="Yangi parol(Yangilash kerak bo'lmasa shart emas)"
             >
               <Input placeholder="Yangi parol kiriting" />
-            </Form.Item>
+            </Form.Item>}
             <Form.Item>
               <Button loading={isLoading} htmlType="submit" type="primary">
                 Yangilash
